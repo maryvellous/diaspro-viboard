@@ -9,6 +9,7 @@ const GoogleTools = require('./googleTools');
 const SpotifyTools = require('./spotifyTools');
 const AIEngine = require('./aiEngine');
 const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
+const { openTerminal, openVSCode, openAndroidStudio, openAntigravityIDE, openInExplorer } = require('./systemOps');
 
 const store = new LocalStore();
 const authVault = new AuthVault();

@@ -57,12 +57,12 @@ async function scanDirectoryForGitRepos(rootDir, maxDepth = 4, currentDepth = 0)
           const subRepos = await scanDirectoryForGitRepos(fullPath, maxDepth, currentDepth + 1);
           gitRepos.push(...subRepos);
         } catch (err) {
-          // Ignore permission denied or locked folder errors
+          console.debug(`[gitScanner] Skipping folder ${fullPath}:`, err.message);
         }
       }
     }
   } catch (err) {
-    // Ignore folder access errors
+    console.debug(`[gitScanner] Cannot access root directory ${rootDir}:`, err.message);
   }
 
   return gitRepos;

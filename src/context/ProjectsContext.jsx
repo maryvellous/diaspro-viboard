@@ -71,7 +71,7 @@ export function ProjectsProvider({ children }) {
         {
           id: 'p1',
           name: 'sito',
-          path: 'C:\\Users\\Mary\\Desktop\\Cosciottina\\Avventurieri APS\\sito',
+          path: 'C:\\Progetti\\sito',
           branch: 'main',
           clean: true,
           modified: 0,
@@ -81,7 +81,7 @@ export function ProjectsProvider({ children }) {
         {
           id: 'p2',
           name: 'AvventurieriApp',
-          path: 'C:\\Users\\Mary\\Desktop\\Cosciottina\\AvventurieriApp',
+          path: 'C:\\Progetti\\AvventurieriApp',
           branch: 'main',
           clean: false,
           modified: 1,

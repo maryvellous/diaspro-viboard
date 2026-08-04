@@ -298,7 +298,11 @@ class AIEngine {
       const toolCall = choice.tool_calls[0].function;
       const toolName = toolCall.name;
       let params = {};
-      try { params = JSON.parse(toolCall.arguments || '{}'); } catch(e){}
+      try {
+        params = JSON.parse(toolCall.arguments || '{}');
+      } catch (e) {
+        console.warn('[AIEngine] Failed to parse toolCall arguments JSON:', e.message);
+      }
 
       if (this.mutativeTools.includes(toolName)) {
         return {

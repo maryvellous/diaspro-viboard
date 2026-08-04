@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { useGamification } from '../context/GamificationContext';
+import { PROVIDER_INFO as providerInfo } from '../constants/providers';
 
 export default function OnboardingWizard() {
   const { completeOnboarding } = useGamification();
@@ -19,14 +20,6 @@ export default function OnboardingWizard() {
   const [ghValidating, setGhValidating] = useState(false);
   const [ghUser, setGhUser] = useState(null); // { login, avatar_url, name }
   const [ghError, setGhError] = useState('');
-
-  const providerInfo = {
-    anthropic: { name: 'Anthropic (Claude)', link: 'https://console.anthropic.com/settings/keys', placeholder: 'sk-ant-api...' },
-    deepseek: { name: 'DeepSeek', link: 'https://platform.deepseek.com/api_keys', placeholder: 'sk-...' },
-    gemini: { name: 'Google Gemini', link: 'https://aistudio.google.com/app/apikey', placeholder: 'AIzaSy...' },
-    openai: { name: 'OpenAI', link: 'https://platform.openai.com/api-keys', placeholder: 'sk-proj-...' },
-    ollama: { name: 'Ollama (Locale)', link: 'https://ollama.com', placeholder: 'http://localhost:11434' },
-  };
 
   // Test AI Key
   const handleTestAiKey = async () => {

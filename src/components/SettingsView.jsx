@@ -6,6 +6,8 @@ import {
 import { useProjects } from '../context/ProjectsContext';
 import { useGamification } from '../context/GamificationContext';
 
+import { PROVIDER_INFO as providerInfo } from '../constants/providers';
+
 export default function SettingsView() {
   const { refreshProjects } = useProjects();
   const { userName, completeOnboarding } = useGamification();
@@ -31,14 +33,6 @@ export default function SettingsView() {
 
   // Spotify Status
   const [spotifyStatus, setSpotifyStatus] = useState({ status: 'disconnected', userName: '' });
-
-  const providerInfo = {
-    gemini: { name: 'Google Gemini', link: 'https://aistudio.google.com/app/apikey', placeholder: 'AIzaSy...' },
-    anthropic: { name: 'Anthropic (Claude)', link: 'https://console.anthropic.com/settings/keys', placeholder: 'sk-ant-api...' },
-    deepseek: { name: 'DeepSeek', link: 'https://platform.deepseek.com/api_keys', placeholder: 'sk-...' },
-    openai: { name: 'OpenAI', link: 'https://platform.openai.com/api-keys', placeholder: 'sk-proj-...' },
-    ollama: { name: 'Ollama (Locale)', link: 'https://ollama.com', placeholder: 'http://localhost:11434' },
-  };
 
   useEffect(() => {
     setNameInput(userName);
