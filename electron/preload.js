@@ -39,6 +39,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getGoogleCalendarEvents: (maxResults) => ipcRenderer.invoke('google:get-events', maxResults),
   createGoogleCalendarEvent: (eventData) => ipcRenderer.invoke('google:create-event', eventData),
   getGoogleTasks: () => ipcRenderer.invoke('google:get-tasks'),
+
+  // Spotify Integration
+  startSpotifyOAuth: () => ipcRenderer.invoke('spotify:start-oauth'),
+  getSpotifyStatus: () => ipcRenderer.invoke('spotify:get-status'),
+  disconnectSpotify: () => ipcRenderer.invoke('spotify:disconnect'),
+  getSpotifyPlayback: () => ipcRenderer.invoke('spotify:get-playback'),
+  spotifyPlay: () => ipcRenderer.invoke('spotify:play'),
+  spotifyPause: () => ipcRenderer.invoke('spotify:pause'),
+  spotifyNext: () => ipcRenderer.invoke('spotify:next'),
+  spotifyPrevious: () => ipcRenderer.invoke('spotify:previous'),
 });
+
 
 

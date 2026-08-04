@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, FolderGit2, CheckCircle2, Settings, Sparkles } from 'lucide-react';
+import { Calendar, FolderGit2, CheckCircle2, Settings, Sparkles, Music } from 'lucide-react';
 import { useGamification } from '../context/GamificationContext';
 
 export default function Sidebar({ currentTab, setCurrentTab }) {
@@ -10,8 +10,10 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
     { id: 'today', icon: CheckCircle2, label: 'Oggi' },
     { id: 'projects', icon: FolderGit2, label: 'Progetti' },
     { id: 'calendar', icon: Calendar, label: 'Calendario' },
+    { id: 'spotify', icon: Music, label: 'Spotify' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
+
 
   return (
     <aside className="w-24 md:w-28 h-full py-8 px-4 flex flex-col items-center justify-between bg-[#6B5887] select-none z-30 shadow-2xl">

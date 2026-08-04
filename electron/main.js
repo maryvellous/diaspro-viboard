@@ -4,16 +4,15 @@ const http = require('http');
 const LocalStore = require('./storage');
 const AuthVault = require('./authVault');
 const GitHubTools = require('./githubTools');
-const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
-const { openTerminal, openVSCode, openAndroidStudio, openAntigravityIDE, openInExplorer } = require('./systemOps');
-
 const OAuthManager = require('./oauthManager');
 const GoogleTools = require('./googleTools');
+const SpotifyTools = require('./spotifyTools');
 
 const store = new LocalStore();
 const authVault = new AuthVault();
 const githubTools = new GitHubTools(authVault);
 const googleTools = new GoogleTools(authVault);
+const spotifyTools = new SpotifyTools(authVault);
 let mainWindow = null;
 
 function checkDevServer(url) {
@@ -194,6 +193,40 @@ ipcMain.handle('google:create-event', async (event, eventData) => {
 ipcMain.handle('google:get-tasks', async () => {
   return await googleTools.getGoogleTasks();
 });
+
+// Spotify Integration IPC Handlers
+ipcMain.handle('spotify:start-oauth', async () => {
+  return await spotifyTools.startSpotifyOAuth();
+});
+
+ipcMain.handle('spotify:get-status', async () => {
+  return await spotifyTools.getConnectionStatus();
+});
+
+ipcMain.handle('spotify:disconnect', async () => {
+  return authVault.removeToken('spotify_tokens');
+});
+
+ipcMain.handle('spotify:get-playback', async () => {
+  return await spotifyTools.getPlaybackState();
+});
+
+ipcMain.handle('spotify:play', async () => {
+  return await spotifyTools.play();
+});
+
+ipcMain.handle('spotify:pause', async () => {
+  return await spotifyTools.pause();
+});
+
+ipcMain.handle('spotify:next', async () => {
+  return await spotifyTools.next();
+});
+
+ipcMain.handle('spotify:previous', async () => {
+  return await spotifyTools.previous();
+});
+
 
 // AI API Key Test IPC Handler
 ipcMain.handle('ai:test-key', async (event, { provider, apiKey }) => {
