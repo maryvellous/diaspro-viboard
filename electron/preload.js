@@ -30,5 +30,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // AI Key Test
   testAiKey: (apiKey) => ipcRenderer.invoke('ai:test-key', apiKey),
+
+  // Google Integration
+  startGoogleOAuth: () => ipcRenderer.invoke('google:start-oauth'),
+  getGoogleStatus: () => ipcRenderer.invoke('google:get-status'),
+  disconnectGoogle: () => ipcRenderer.invoke('google:disconnect'),
+  getGoogleCalendarEvents: (maxResults) => ipcRenderer.invoke('google:get-events', maxResults),
+  createGoogleCalendarEvent: (eventData) => ipcRenderer.invoke('google:create-event', eventData),
+  getGoogleTasks: () => ipcRenderer.invoke('google:get-tasks'),
 });
+
 

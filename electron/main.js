@@ -7,9 +7,13 @@ const GitHubTools = require('./githubTools');
 const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
 const { openTerminal, openVSCode, openAndroidStudio, openAntigravityIDE, openInExplorer } = require('./systemOps');
 
+const OAuthManager = require('./oauthManager');
+const GoogleTools = require('./googleTools');
+
 const store = new LocalStore();
 const authVault = new AuthVault();
 const githubTools = new GitHubTools(authVault);
+const googleTools = new GoogleTools(authVault);
 let mainWindow = null;
 
 function checkDevServer(url) {
@@ -160,6 +164,37 @@ ipcMain.handle('github:get-issues', async () => {
   return await githubTools.getIssues();
 });
 
+// Google Integration IPC Handlers
+ipcMain.handle('google:start-oauth', async () => {
+  const clientId = googleTools.getClientId();
+  const clientSecret = googleTools.getClientSecret();
+  const oauthResult = await OAuthManager.startGoogleOAuth({ clientId, clientSecret });
+  if (oauthResult.success && oauthResult.tokens) {
+    authVault.saveToken('google_tokens', oauthResult.tokens);
+  }
+  return oauthResult;
+});
+
+ipcMain.handle('google:get-status', async () => {
+  return await googleTools.getConnectionStatus();
+});
+
+ipcMain.handle('google:disconnect', async () => {
+  return authVault.removeToken('google_tokens');
+});
+
+ipcMain.handle('google:get-events', async (event, maxResults) => {
+  return await googleTools.getCalendarEvents(maxResults);
+});
+
+ipcMain.handle('google:create-event', async (event, eventData) => {
+  return await googleTools.createCalendarEvent(eventData);
+});
+
+ipcMain.handle('google:get-tasks', async () => {
+  return await googleTools.getGoogleTasks();
+});
+
 // AI API Key Test IPC Handler
 ipcMain.handle('ai:test-key', async (event, apiKey) => {
   const keyToTest = apiKey || authVault.getToken('gemini_api_key');
@@ -176,4 +211,5 @@ ipcMain.handle('ai:test-key', async (event, apiKey) => {
     return { success: false, error: e.message };
   }
 });
+
 

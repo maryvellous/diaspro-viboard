@@ -20,6 +20,11 @@ export default function SettingsView() {
   const [githubUser, setGithubUser] = useState(null);
   const [validatingGh, setValidatingGh] = useState(false);
 
+  // Google OAuth Credentials
+  const [googleClientId, setGoogleClientId] = useState('');
+  const [googleClientSecret, setGoogleClientSecret] = useState('');
+  const [googleStatus, setGoogleStatus] = useState({ status: 'disconnected', userEmail: '' });
+
   useEffect(() => {
     setNameInput(userName);
 
@@ -41,6 +46,17 @@ export default function SettingsView() {
             if (res.valid) setGithubUser(res.user);
           });
         }
+      });
+
+      // Load Google Client ID & Status
+      window.electronAPI.getToken('google_client_id').then((cid) => {
+        if (cid) setGoogleClientId(cid);
+      });
+      window.electronAPI.getToken('google_client_secret').then((cs) => {
+        if (cs) setGoogleClientSecret(cs);
+      });
+      window.electronAPI.getGoogleStatus().then((st) => {
+        if (st) setGoogleStatus(st);
       });
     }
   }, [userName]);
@@ -81,6 +97,25 @@ export default function SettingsView() {
       } else {
         alert(res.error || 'Token non valido');
       }
+    }
+  };
+
+  const handleSaveGoogleCredentials = async () => {
+    if (window.electronAPI) {
+      if (googleClientId.trim()) {
+        await window.electronAPI.saveToken('google_client_id', googleClientId.trim());
+      }
+      if (googleClientSecret.trim()) {
+        await window.electronAPI.saveToken('google_client_secret', googleClientSecret.trim());
+      }
+      alert('Credenziali Google salvate cifrate nel Vault.');
+    }
+  };
+
+  const handleDisconnectGoogle = async () => {
+    if (window.electronAPI) {
+      await window.electronAPI.disconnectGoogle();
+      setGoogleStatus({ status: 'disconnected', userEmail: '' });
     }
   };
 
@@ -190,6 +225,49 @@ export default function SettingsView() {
               <span>Connesso come @{githubUser.login}</span>
             </div>
           )}
+        </div>
+
+        {/* Google Workspace Config */}
+        <div className="dashboard-card bg-[#2b1c47] border border-white/10 p-7 flex flex-col gap-4">
+          <h2 className="font-heading font-bold text-lg text-white">
+            Google Workspace Credentials (OAuth 2.0 PKCE)
+          </h2>
+          <p className="text-xs text-white/70 font-mono">
+            Inserisci il tuo Google Client ID (dalla Google Cloud Console) per autorizzare l'accesso a Calendar & Tasks.
+          </p>
+          <div className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder="Google Client ID (.apps.googleusercontent.com)"
+              value={googleClientId}
+              onChange={(e) => setGoogleClientId(e.target.value)}
+              className="bg-black/30 border border-white/20 text-white font-mono text-xs rounded-2xl px-5 py-3 focus:outline-none focus:border-[#9D85C6]"
+            />
+            <input
+              type="password"
+              placeholder="Google Client Secret (Opzionale per PKCE)"
+              value={googleClientSecret}
+              onChange={(e) => setGoogleClientSecret(e.target.value)}
+              className="bg-black/30 border border-white/20 text-white font-mono text-xs rounded-2xl px-5 py-3 focus:outline-none focus:border-[#9D85C6]"
+            />
+            <div className="flex justify-between items-center mt-1">
+              <button
+                onClick={handleSaveGoogleCredentials}
+                className="action-pill bg-[#9D85C6] hover:bg-[#6B5887] text-white"
+              >
+                Salva Credenziali Google
+              </button>
+
+              {googleStatus.status === 'connected' && (
+                <button
+                  onClick={handleDisconnectGoogle}
+                  className="action-pill bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-300 text-xs"
+                >
+                  Disconnetti Google ({googleStatus.userEmail})
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Scan Paths */}

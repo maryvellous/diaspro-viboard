@@ -4,7 +4,7 @@ import { useProjects } from '../context/ProjectsContext';
 import { Sparkles, CheckCircle2, Circle, Plus, Trash2, Zap, ArrowUpRight } from 'lucide-react';
 
 export default function TodayView() {
-  const { level, streak } = useGamification();
+  const { userName, level, streak } = useGamification();
   const { tasks, addTask, toggleTask, deleteTask, projects, setActiveProject, projectNicknames } = useProjects();
   const [newTodayTask, setNewTodayTask] = useState('');
 
@@ -32,13 +32,13 @@ export default function TodayView() {
               />
             </div>
             <div className="absolute -bottom-2 -right-2 bg-amber-300 text-amber-950 font-black text-xs px-2.5 py-0.5 rounded-full border border-amber-950 shadow">
-              🔥 {streak}d
+              {streak}d
             </div>
           </div>
 
           <div>
             <h1 className="font-heading font-black text-3xl text-white flex items-center gap-3">
-              Bentornata, Mary! ⚡
+              Bentornato, {userName || 'Avventuriero'}
             </h1>
             <p className="text-sm font-medium text-white/80 mt-1">
               epicSnail è pronta per la tua sessione di lavoro.
