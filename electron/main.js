@@ -36,11 +36,11 @@ async function createWindow() {
     title: 'epicSnail',
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#160a2c',
-      symbolColor: '#f3e8ff',
+      color: '#2b1c47',
+      symbolColor: '#E8D19E',
       height: 36,
     },
-    backgroundColor: '#160a2c',
+    backgroundColor: '#1e1333',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,

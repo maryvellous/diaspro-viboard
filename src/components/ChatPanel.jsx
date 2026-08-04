@@ -267,25 +267,22 @@ export default function ChatPanel() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#1e1333] text-white relative overflow-hidden select-none">
-      {/* HEADER CHAT - Uses #2b1c47 & #6B5887 */}
-      <header className="h-16 px-6 bg-[#2b1c47] border-b border-[#7A3F67]/50 flex items-center justify-between z-20 shadow-xl">
-        <div className="flex items-center gap-3">
+      {/* HEADER CHAT - Uses #2b1c47 & #6B5887 with drag-region */}
+      <header className="h-16 px-6 pr-36 bg-[#2b1c47] border-b border-[#7A3F67]/50 flex items-center justify-between z-20 shadow-xl drag-region">
+        <div className="flex items-center gap-3 no-drag">
           <div className="w-10 h-10 rounded-2xl bg-[#7A3F67] flex items-center justify-center shadow-md border border-[#9D85C6]/30">
             <Sparkles className="w-5 h-5 text-[#E8D19E] animate-pulse" />
           </div>
           <div>
-            <h1 className="font-heading font-black text-lg text-white leading-tight flex items-center gap-2">
+            <h1 className="font-heading font-black text-lg text-white leading-tight">
               Interfaccia Chat
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#7A3F67] border border-[#9D85C6]/40 text-[#E8D19E]">
-                Fase 4
-              </span>
             </h1>
             <p className="text-xs text-[#9D85C6]">Client dedicato & Assistente integrato epicSnail</p>
           </div>
         </div>
 
         {/* CONTROLS HEADER */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 no-drag">
           {/* Provider Selector */}
           <div className="relative">
             <select
