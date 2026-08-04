@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useProjects } from '../context/ProjectsContext';
+import { AestheticBriefcaseIcon } from './AestheticIcons';
 import {
   Terminal,
   Code2,
@@ -18,10 +19,18 @@ import {
   Circle,
   FileText,
   X,
-  StickyNote
+  StickyNote,
+  Bot,
+  Pin,
+  Eye,
+  EyeOff,
+  ArrowUpDown,
+  Globe,
+  RefreshCw,
+  Star
 } from 'lucide-react';
 
-export default function ProjectsView() {
+export default function ProjectsView({ onNavigateTab }) {
   const {
     projects,
     loading,
@@ -34,11 +43,24 @@ export default function ProjectsView() {
     setProjectNickname,
     projectColors,
     setProjectColor,
+    pinnedProjectIds,
+    togglePinProject,
+    hiddenProjectIds,
+    toggleHideProject,
+    showHiddenProjects,
+    setShowHiddenProjects,
+    sortBy,
+    changeSortBy,
+    projectFilter,
+    changeProjectFilter,
+    refreshProjects,
     launchTerminal,
     launchVSCode,
     launchAndroidStudio,
     launchAntigravityIDE,
-    launchExplorer
+    launchExplorer,
+    openExternal,
+    syncProject
   } = useProjects();
 
   const [editingId, setEditingId] = useState(null);
@@ -107,15 +129,64 @@ export default function ProjectsView() {
 
   return (
     <div className="projects-canvas-container select-none">
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-10">
+      {/* Header Section & Toolbar Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
         <div>
-          <h1 className="font-heading font-black text-3xl text-white tracking-wide flex items-center gap-4">
+          <h1 className="font-heading font-black text-3xl text-white tracking-wide flex items-center gap-3.5">
+            <AestheticBriefcaseIcon className="w-10 h-10 shrink-0 filter drop-shadow-md" />
             I Miei Progetti
-            <span className="badge-pill bg-[#6B5887] text-white border border-white/20 shadow-md">
+            <span className="badge-pill bg-[#6B5887] text-white border border-white/20 shadow-md text-xs">
               {projects.length} repository
             </span>
           </h1>
+        </div>
+
+        {/* Toolbar: Filter Selector, Sort Selector & Show Hidden Projects Toggle */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Filter Selector */}
+          <div className="relative">
+            <select
+              value={projectFilter}
+              onChange={(e) => changeProjectFilter(e.target.value)}
+              className="appearance-none bg-[#2b1c47] text-white border border-[#9D85C6]/40 hover:border-[#9D85C6] rounded-2xl px-4 py-2 pr-8 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#9D85C6] cursor-pointer shadow-md"
+            >
+              <option value="all" className="bg-[#1e1333] text-white">📦 Tutti i Progetti</option>
+              <option value="local_only" className="bg-[#1e1333] text-white">💻 Solo Locali</option>
+              <option value="github_only" className="bg-[#1e1333] text-white">🐙 Solo Remote GitHub</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-[#E8D19E] absolute right-2.5 top-3 pointer-events-none" />
+          </div>
+
+          {/* Sort Selector */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => changeSortBy(e.target.value)}
+              className="appearance-none bg-[#2b1c47] text-white border border-[#9D85C6]/40 hover:border-[#9D85C6] rounded-2xl px-4 py-2 pr-8 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#9D85C6] cursor-pointer shadow-md"
+            >
+              <option value="modified_desc" className="bg-[#1e1333] text-white">Modifica (Più recenti)</option>
+              <option value="modified_asc" className="bg-[#1e1333] text-white">Modifica (Meno recenti)</option>
+              <option value="created_desc" className="bg-[#1e1333] text-white">Creazione (Più recenti)</option>
+              <option value="created_asc" className="bg-[#1e1333] text-white">Creazione (Meno recenti)</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-[#E8D19E] absolute right-2.5 top-3 pointer-events-none" />
+          </div>
+
+          {/* Show Hidden Projects Toggle */}
+          {hiddenProjectIds.length > 0 && (
+            <button
+              onClick={() => setShowHiddenProjects(!showHiddenProjects)}
+              className={`action-pill transition-all ${
+                showHiddenProjects
+                  ? 'bg-[#E8D19E] text-[#1e1333] font-black'
+                  : 'bg-white/10 hover:bg-white/20 border border-white/20 text-[#A5C4DC]'
+              }`}
+              title="Mostra o nascondi i progetti archiviati"
+            >
+              {showHiddenProjects ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              <span>{showHiddenProjects ? 'Nascondi Archiviati' : `Mostra Nascosti (${hiddenProjectIds.length})`}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -149,13 +220,17 @@ export default function ProjectsView() {
           const hasTasks = projectTasks.length > 0;
           const isDarkTheme = themeColor === 'plum' || themeColor === 'terracotta' || themeColor === 'default';
 
+          const isPinned = pinnedProjectIds.includes(project.id);
+          const isHidden = hiddenProjectIds.includes(project.id);
           const isOverlayOpen = activePostItId === project.id;
 
           return (
             <div
               key={project.id}
               onContextMenu={(e) => handleContextMenu(e, project)}
-              className={`dashboard-card theme-${themeColor} relative group cursor-default`}
+              className={`dashboard-card theme-${themeColor} relative group cursor-default transition-all duration-300 ${
+                isHidden ? 'opacity-40 border-2 border-dashed border-amber-300/60 hover:opacity-90' : ''
+              }`}
             >
               {/* FLOATING POST-IT OVERLAY STICKER */}
               {isOverlayOpen && (
@@ -244,14 +319,26 @@ export default function ProjectsView() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-between gap-3 group/title">
-                      <h2
-                        onClick={() => setActiveProject(project)}
-                        className={`font-heading font-black text-2xl leading-snug cursor-pointer transition-opacity hover:opacity-80 ${
-                          isDarkTheme ? 'text-white' : 'text-[#1e1333]'
-                        }`}
-                      >
-                        {customName}
-                      </h2>
+                      <div className="flex items-center gap-2">
+                        <h2
+                          onClick={() => setActiveProject(project)}
+                          className={`font-heading font-black text-2xl leading-snug cursor-pointer transition-opacity hover:opacity-80 ${
+                            isDarkTheme ? 'text-white' : 'text-[#1e1333]'
+                          }`}
+                        >
+                          {customName}
+                        </h2>
+                        {isPinned && (
+                          <span className="p-1 rounded-lg bg-[#E8D19E] text-[#1e1333] shadow-md" title="Fissato in alto">
+                            <Pin className="w-3.5 h-3.5 fill-current" />
+                          </span>
+                        )}
+                        {isHidden && (
+                          <span className="p-1 rounded-lg bg-amber-500/30 text-amber-200 border border-amber-400/40 text-[10px] font-mono font-bold">
+                            Nascosto
+                          </span>
+                        )}
+                      </div>
                       <button
                         onClick={() => handleStartRename(project)}
                         title="Modifica nome personalizzato"
@@ -273,7 +360,19 @@ export default function ProjectsView() {
                 </div>
 
                 {/* 2. Badges Block (Explicit Card Section 2) */}
-                <div className="card-badges-block">
+                <div className="card-badges-block flex-wrap">
+                  {project.isLocal !== false && (
+                    <span className="badge-pill bg-purple-900/60 text-purple-200 border border-purple-400/40">
+                      💻 Locale
+                    </span>
+                  )}
+
+                  {project.isGitHubRemote && (
+                    <span className="badge-pill bg-slate-800 text-[#E8D19E] border border-[#E8D19E]/40">
+                      🐙 GitHub
+                    </span>
+                  )}
+
                   <span className={`badge-pill ${
                     isDarkTheme ? 'bg-white/15 text-white border border-white/20' : 'bg-black/15 text-black border border-black/15'
                   }`}>
@@ -281,15 +380,30 @@ export default function ProjectsView() {
                     <span>{project.branch}</span>
                   </span>
 
-                  {project.clean ? (
-                    <span className="badge-pill text-emerald-950 bg-emerald-400/90 border border-emerald-500/40">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Clean</span>
+                  {project.isLocal !== false && (
+                    project.clean ? (
+                      <span className="badge-pill text-emerald-950 bg-emerald-400/90 border border-emerald-500/40">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Clean</span>
+                      </span>
+                    ) : (
+                      <span className="badge-pill text-amber-950 bg-amber-300/90 border border-amber-500/40">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{project.modified} modificati</span>
+                      </span>
+                    )
+                  )}
+
+                  {project.stargazers_count !== undefined && (
+                    <span className="badge-pill text-amber-200 bg-amber-900/50 border border-amber-400/30" title="Stelle GitHub">
+                      <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300 shrink-0" />
+                      <span>{project.stargazers_count}</span>
                     </span>
-                  ) : (
-                    <span className="badge-pill text-amber-950 bg-amber-300/90 border border-amber-500/40">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{project.modified} modificati</span>
+                  )}
+
+                  {project.open_issues_count !== undefined && project.open_issues_count > 0 && (
+                    <span className="badge-pill text-rose-200 bg-rose-950/60 border border-rose-500/40" title="Issue aperte su GitHub">
+                      <span>🟢 {project.open_issues_count} issue</span>
                     </span>
                   )}
 
@@ -324,80 +438,107 @@ export default function ProjectsView() {
               </div>
 
               {/* 4. Actions Block (Explicit Card Section 4) */}
-              <div className={`card-bottom-actions ${
+              <div className={`card-bottom-actions flex-wrap gap-2 ${
                 isDarkTheme ? 'border-white/15' : 'border-black/15'
               }`}>
-                <div className="relative">
+                {project.isLocal !== false && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setOpenMenuId(openMenuId === project.id ? null : project.id)}
+                      className={`action-pill ${
+                        isDarkTheme ? 'bg-white text-purple-950 hover:bg-purple-100' : 'bg-[#1e1333] text-white hover:bg-purple-950'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <FolderOpen className="w-3.5 h-3.5" />
+                        <span>Apri in...</span>
+                      </span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openMenuId === project.id ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Popover Dropdown Menu */}
+                    {openMenuId === project.id && (
+                      <div className="absolute left-0 bottom-14 z-50 w-56 dashboard-card p-2 shadow-2xl bg-[#1e1333] text-white border-white/20 flex flex-col gap-1 animate-fadeIn">
+                        <button
+                          onClick={() => {
+                            launchTerminal(project.path);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-left transition-colors"
+                        >
+                          <Terminal className="w-4 h-4 text-purple-300" />
+                          <span>PowerShell Terminale</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            launchAndroidStudio(project.path);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-emerald-300 text-left transition-colors"
+                        >
+                          <Smartphone className="w-4 h-4 text-emerald-400" />
+                          <span>Android Studio</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            launchAntigravityIDE(project.path);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-cyan-300 text-left transition-colors"
+                        >
+                          <Sparkles className="w-4 h-4 text-cyan-300" />
+                          <span>Antigravity IDE</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            launchVSCode(project.path);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-blue-300 text-left transition-colors"
+                        >
+                          <Code2 className="w-4 h-4 text-blue-400" />
+                          <span>VS Code</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            launchExplorer(project.path);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-amber-300 text-left transition-colors border-t border-white/10 mt-1 pt-3"
+                        >
+                          <FolderOpen className="w-4 h-4 text-amber-400" />
+                          <span>Esplora Risorse</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {project.isGitHubRemote && project.githubUrl && (
                   <button
-                    onClick={() => setOpenMenuId(openMenuId === project.id ? null : project.id)}
-                    className={`action-pill ${
-                      isDarkTheme ? 'bg-white text-purple-950 hover:bg-purple-100' : 'bg-[#1e1333] text-white hover:bg-purple-950'
-                    }`}
+                    onClick={() => openExternal(project.githubUrl)}
+                    className="action-pill bg-[#6B5887] hover:bg-[#7A3F67] text-white border border-white/20"
+                    title="Apri repository su GitHub Web"
                   >
-                    <span>🚀 Apri in...</span>
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openMenuId === project.id ? 'rotate-180' : ''}`} />
+                    <Globe className="w-3.5 h-3.5 shrink-0" />
+                    <span>GitHub Web</span>
                   </button>
+                )}
 
-                  {/* Popover Dropdown Menu */}
-                  {openMenuId === project.id && (
-                    <div className="absolute left-0 bottom-14 z-50 w-56 dashboard-card p-2 shadow-2xl bg-[#1e1333] text-white border-white/20 flex flex-col gap-1 animate-fadeIn">
-                      <button
-                        onClick={() => {
-                          launchTerminal(project.path);
-                          setOpenMenuId(null);
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-left transition-colors"
-                      >
-                        <Terminal className="w-4 h-4 text-purple-300" />
-                        <span>PowerShell Terminale</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          launchAndroidStudio(project.path);
-                          setOpenMenuId(null);
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-emerald-300 text-left transition-colors"
-                      >
-                        <Smartphone className="w-4 h-4 text-emerald-400" />
-                        <span>Android Studio</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          launchAntigravityIDE(project.path);
-                          setOpenMenuId(null);
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-cyan-300 text-left transition-colors"
-                      >
-                        <Sparkles className="w-4 h-4 text-cyan-300" />
-                        <span>Antigravity IDE</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          launchVSCode(project.path);
-                          setOpenMenuId(null);
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-blue-300 text-left transition-colors"
-                      >
-                        <Code2 className="w-4 h-4 text-blue-400" />
-                        <span>VS Code</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          launchExplorer(project.path);
-                          setOpenMenuId(null);
-                        }}
-                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/15 text-xs font-bold text-amber-300 text-left transition-colors border-t border-white/10 mt-1 pt-3"
-                      >
-                        <FolderOpen className="w-4 h-4 text-amber-400" />
-                        <span>Esplora Risorse</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {project.isLocal !== false && (
+                  <button
+                    onClick={() => syncProject(project.path)}
+                    className="action-pill bg-white/10 hover:bg-white/20 text-[#A5C4DC] border border-white/20"
+                    title="Esegui git fetch sul progetto"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+                    <span>Fetch</span>
+                  </button>
+                )}
 
                 <button
                   onClick={() => setActiveProject(project)}
@@ -407,7 +548,10 @@ export default function ProjectsView() {
                       : 'bg-black/10 hover:bg-black/20 text-[#1e1333] border border-black/20'
                   }`}
                 >
-                  <span>📋 Dettagli</span>
+                  <span className="flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Dettagli</span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -452,6 +596,54 @@ export default function ProjectsView() {
             ))}
           </div>
 
+          {contextMenu.project.githubUrl && (
+            <button
+              onClick={() => {
+                openExternal(contextMenu.project.githubUrl);
+                setContextMenu(null);
+              }}
+              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-[#E8D19E] text-left"
+            >
+              <Globe className="w-4 h-4 text-[#E8D19E]" />
+              <span>Apri su GitHub Web</span>
+            </button>
+          )}
+
+          {contextMenu.project.isLocal !== false && (
+            <button
+              onClick={() => {
+                syncProject(contextMenu.project.path);
+                setContextMenu(null);
+              }}
+              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-[#A5C4DC] text-left"
+            >
+              <RefreshCw className="w-4 h-4 text-[#A5C4DC]" />
+              <span>Sincronizza Git (Fetch)</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              togglePinProject(contextMenu.project.id);
+              setContextMenu(null);
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-[#E8D19E] text-left"
+          >
+            <Pin className="w-4 h-4" />
+            <span>{pinnedProjectIds.includes(contextMenu.project.id) ? 'Sblocca / Unpinna Progetto' : 'Pinna in Alto'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              toggleHideProject(contextMenu.project.id);
+              setContextMenu(null);
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-amber-300 text-left"
+          >
+            {hiddenProjectIds.includes(contextMenu.project.id) ? <Eye className="w-4 h-4 text-emerald-300" /> : <EyeOff className="w-4 h-4 text-amber-300" />}
+            <span>{hiddenProjectIds.includes(contextMenu.project.id) ? 'Rendi di Nuovo Visibile' : 'Nascondi Progetto'}</span>
+          </button>
+
           <button
             onClick={() => {
               const title = prompt('Inserisci titolo nuova task per Post-it:');
@@ -461,10 +653,34 @@ export default function ProjectsView() {
               }
               setContextMenu(null);
             }}
-            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-amber-300 text-left"
+            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-[#A5C4DC] text-left"
           >
             <Plus className="w-4 h-4" />
             <span>Aggiungi Task Post-it</span>
+          </button>
+
+          <button
+            onClick={async () => {
+              const proj = contextMenu.project;
+              const projTasks = tasks.filter((t) => t.projectId === proj.id);
+              const nickname = projectNicknames[proj.id] || proj.name;
+              
+              const contextString = `[CONTESTO PROGETTO: ${nickname}]
+- Percorso locale: ${proj.path}
+- Ramo Git attivo: ${proj.branch}`;
+
+              if (window.electronAPI) {
+                await window.electronAPI.saveContextHeader(contextString);
+              }
+              setContextMenu(null);
+              if (onNavigateTab) {
+                onNavigateTab('chat');
+              }
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-[#E8D19E] text-left border-t border-white/10 mt-1 pt-2"
+          >
+            <Bot className="w-4 h-4 text-[#E8D19E]" />
+            <span>Apri come contesto nel Chatbot</span>
           </button>
 
           <button
@@ -472,7 +688,7 @@ export default function ProjectsView() {
               setActiveProject(contextMenu.project);
               setContextMenu(null);
             }}
-            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-cyan-300 text-left border-t border-white/10 mt-1 pt-2"
+            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/15 text-xs font-bold text-cyan-300 text-left border-t border-white/10"
           >
             <FileText className="w-4 h-4" />
             <span>Apri Dettagli & Note</span>

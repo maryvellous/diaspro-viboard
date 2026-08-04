@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GamificationProvider } from './context/GamificationContext';
 import { ProjectsProvider } from './context/ProjectsContext';
+import { SectionsProvider, useSections } from './context/SectionsContext';
 
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -16,9 +17,13 @@ import OnboardingWizard from './components/OnboardingWizard';
 import { useGamification } from './context/GamificationContext';
 
 import SpotifyWidget from './components/SpotifyWidget';
+import PinterestView from './components/PinterestView';
 import ChatPanel from './components/ChatPanel';
+import LevelUpModal from './components/LevelUpModal';
 
-function MainContent({ currentTab, onOpenSearch }) {
+function MainContent({ currentTab, setCurrentTab, onOpenSearch }) {
+  const { enabledSections } = useSections();
+
   if (currentTab === 'chat') {
     return (
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -32,26 +37,77 @@ function MainContent({ currentTab, onOpenSearch }) {
       <Header onOpenSearch={onOpenSearch} />
       <div className="flex-1 flex overflow-hidden">
         {currentTab === 'today' && <TodayView />}
-        {currentTab === 'projects' && <ProjectsView />}
+        {currentTab === 'projects' && <ProjectsView onNavigateTab={setCurrentTab} />}
         {currentTab === 'calendar' && <GoogleCalendarWidget />}
-        {currentTab === 'spotify' && <SpotifyWidget />}
+        {currentTab === 'spotify' && enabledSections.spotify && <SpotifyWidget />}
+        {currentTab === 'pinterest' && enabledSections.pinterest && (
+          <PinterestView onNavigateTab={setCurrentTab} />
+        )}
         {currentTab === 'settings' && <SettingsView />}
       </div>
     </div>
   );
 }
 
-
 function AppInner() {
   const { firstLaunchCompleted } = useGamification();
+  const { enabledSections } = useSections();
   const [currentTab, setCurrentTab] = useState('projects');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Dynamic available tabs based on enabled sections
+  const activeTabs = [
+    'today',
+    'projects',
+    'calendar',
+    ...(enabledSections.spotify ? ['spotify'] : []),
+    ...(enabledSections.pinterest ? ['pinterest'] : []),
+    'chat',
+    'settings',
+  ];
+
+  // Auto-redirect to 'today' if active tab is disabled
+  useEffect(() => {
+    if (!activeTabs.includes(currentTab)) {
+      setCurrentTab('today');
+    }
+  }, [enabledSections, currentTab]);
+
+  // Tab keyboard navigation through activeTabs only
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const activeEl = document.activeElement;
+      const tag = activeEl?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || activeEl?.isContentEditable) {
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        setCurrentTab((prev) => {
+          const currentIndex = activeTabs.indexOf(prev);
+          const validIndex = currentIndex >= 0 ? currentIndex : 0;
+          if (e.shiftKey) {
+            const nextIndex = (validIndex - 1 + activeTabs.length) % activeTabs.length;
+            return activeTabs[nextIndex];
+          } else {
+            const nextIndex = (validIndex + 1) % activeTabs.length;
+            return activeTabs[nextIndex];
+          }
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTabs]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden select-none">
       <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
       <MainContent
         currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
         onOpenSearch={() => setIsSearchOpen(true)}
       />
       <ProjectDetailModal />
@@ -60,6 +116,7 @@ function AppInner() {
         onClose={() => setIsSearchOpen(false)}
       />
       <XpPopNotification />
+      <LevelUpModal />
       {!firstLaunchCompleted && <OnboardingWizard />}
     </div>
   );
@@ -69,9 +126,10 @@ export default function App() {
   return (
     <GamificationProvider>
       <ProjectsProvider>
-        <AppInner />
+        <SectionsProvider>
+          <AppInner />
+        </SectionsProvider>
       </ProjectsProvider>
     </GamificationProvider>
   );
 }
-

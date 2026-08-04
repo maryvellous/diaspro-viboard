@@ -1,12 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGamification } from '../context/GamificationContext';
 import { useProjects } from '../context/ProjectsContext';
-import { Sparkles, CheckCircle2, Circle, Plus, Trash2, Zap, ArrowUpRight } from 'lucide-react';
+import { Sparkles, CheckCircle2, Circle, Plus, Trash2, Zap, ArrowUpRight, HardDrive, ExternalLink, MessageSquare } from 'lucide-react';
+import { AestheticSunIcon, AestheticCloudIcon, AestheticStarIcon, AestheticBriefcaseIcon } from './AestheticIcons';
 
 export default function TodayView() {
   const { userName, level, streak } = useGamification();
   const { tasks, addTask, toggleTask, deleteTask, projects, setActiveProject, projectNicknames } = useProjects();
   const [newTodayTask, setNewTodayTask] = useState('');
+  const [dialogueIndex, setDialogueIndex] = useState(0);
+  const [driveFiles, setDriveFiles] = useState([]);
+
+  useEffect(() => {
+    if (window.electronAPI) {
+      window.electronAPI.getGoogleDriveFiles(6).then((res) => {
+        if (res && res.success) {
+          setDriveFiles(res.files || []);
+        }
+      });
+    }
+  }, []);
+
+  const dialogues = [
+    `Ciao ${userName || 'Avventuriero'}! Pronti a fare grandi cose oggi?`,
+    `Ogni piccolo passo ti porta lontano! Continua così!`,
+    `Focalizzati sui tuoi obiettivi. Io sono con te!`,
+    `Ricordati di fare qualche pausa tra una sessione e l'altra!`,
+    `Stai facendo un ottimo lavoro! Continua a guadagnare XP!`
+  ];
+
 
   const todayTasks = tasks.filter((t) => !t.projectId || t.projectId === 'today');
   const activeProjectsCount = projects.length;
@@ -18,49 +40,66 @@ export default function TodayView() {
     setNewTodayTask('');
   };
 
+  const handleSnailClick = () => {
+    setDialogueIndex((prev) => (prev + 1) % dialogues.length);
+  };
+
   return (
     <div className="projects-canvas-container select-none">
-      {/* Welcome Banner Card in Sidebar Purple #6B5887 */}
-      <div className="dashboard-card bg-[#6B5887] text-white mb-10 relative overflow-hidden flex items-center justify-between shadow-2xl">
+      {/* CUTE WELCOME BANNER WITH PROMINENT MASCOT */}
+      <div className="dashboard-card bg-[#6B5887] text-white mb-10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 shadow-2xl gap-6 border border-white/20">
         <div className="flex items-center gap-6 z-10">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-3xl bg-white/20 p-1 border border-white/30 shadow-lg">
+          {/* Cute Floating Snail Mascot */}
+          <div
+            onClick={handleSnailClick}
+            className="relative cursor-pointer group shrink-0"
+            title="Clicca sulla lumaca per farla parlare!"
+          >
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-white/30 to-white/10 p-2 border-2 border-white/40 shadow-2xl backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
               <img
                 src="/ntp_snail.png"
-                alt="epicSnail"
-                className="w-full h-full object-contain animate-snail filter drop-shadow-xl"
+                alt="epicSnail Mascot"
+                className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] animate-bounce"
+                style={{ animationDuration: '3s' }}
               />
             </div>
-            <div className="absolute -bottom-2 -right-2 bg-amber-300 text-amber-950 font-black text-xs px-2.5 py-0.5 rounded-full border border-amber-950 shadow">
-              {streak}d
+            
+            <div className="absolute -bottom-2 -right-2 bg-[#E8D19E] text-[#3b2c0f] font-black text-xs px-3 py-1 rounded-full border-2 border-[#3b2c0f] shadow-md flex items-center gap-1">
+              <span>Streak:</span> {streak}d
             </div>
           </div>
 
-          <div>
-            <h1 className="font-heading font-black text-3xl text-white flex items-center gap-3">
-              Bentornato, {userName || 'Avventuriero'}
+          <div className="flex flex-col gap-2">
+            <h1 className="font-heading font-black text-3xl sm:text-4xl text-white tracking-wide flex items-center gap-3">
+              Bentornato, {userName || 'Avventuriero'}!
             </h1>
-            <p className="text-sm font-medium text-white/80 mt-1">
-              epicSnail è pronta per la tua sessione di lavoro.
-            </p>
+
+            {/* Interactive Speech Bubble */}
+            <div
+              onClick={handleSnailClick}
+              className="mt-1 px-4 py-2.5 rounded-2xl bg-[#2b1c47]/90 border border-[#9D85C6]/50 shadow-lg text-xs font-bold text-[#E8D19E] flex items-center gap-2 cursor-pointer hover:bg-[#2b1c47] transition-all max-w-md"
+            >
+              <MessageSquare className="w-4 h-4 text-[#9D85C6] shrink-0" />
+              <span>{dialogues[dialogueIndex]}</span>
+            </div>
           </div>
         </div>
 
         {/* Stats Pills */}
         <div className="flex items-center gap-4 z-10">
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/20 flex items-center gap-3 shadow-md">
-            <Zap className="w-6 h-6 text-amber-300 fill-amber-300 animate-pulse" />
+          <div className="bg-[#1e1333]/80 p-4 rounded-2xl border border-white/20 flex items-center gap-3.5 shadow-md">
+            <AestheticStarIcon className="w-8 h-8 shrink-0 filter drop-shadow-md" />
             <div>
-              <span className="text-[11px] text-white/60 font-mono font-bold uppercase block">Livello</span>
-              <span className="text-lg font-black text-white">{level}</span>
+              <span className="text-[10px] text-white/70 font-mono font-bold uppercase tracking-wider block">Livello</span>
+              <span className="text-lg font-black text-[#E8D19E]">Livello {level}</span>
             </div>
           </div>
 
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/20 flex items-center gap-3 shadow-md">
-            <Sparkles className="w-6 h-6 text-[#A5C4DC]" />
+          <div className="bg-[#1e1333]/80 p-4 rounded-2xl border border-white/20 flex items-center gap-3.5 shadow-md">
+            <AestheticBriefcaseIcon className="w-8 h-8 shrink-0 filter drop-shadow-md" />
             <div>
-              <span className="text-[11px] text-white/60 font-mono font-bold uppercase block">Progetti</span>
-              <span className="text-lg font-black text-white">{activeProjectsCount}</span>
+              <span className="text-[10px] text-white/70 font-mono font-bold uppercase tracking-wider block">Progetti</span>
+              <span className="text-lg font-black text-white">{activeProjectsCount} Active</span>
             </div>
           </div>
         </div>
@@ -72,7 +111,7 @@ export default function TodayView() {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="dashboard-card theme-sand p-7">
             <h2 className="font-heading font-black text-2xl text-[#3b2c0f] mb-6 flex items-center gap-3">
-              <CheckCircle2 className="w-6 h-6 text-amber-800" />
+              <AestheticSunIcon className="w-8 h-8 shrink-0 filter drop-shadow-md" />
               Focus di Oggi
             </h2>
 
@@ -98,7 +137,7 @@ export default function TodayView() {
             <div className="flex flex-col gap-3">
               {todayTasks.length === 0 ? (
                 <p className="text-xs text-amber-900/70 font-bold text-center py-8">
-                  Tutti i task di oggi sono stati completati! 🎉
+                  Tutti i task di oggi sono stati completati!
                 </p>
               ) : (
                 todayTasks.map((t) => (
@@ -168,7 +207,40 @@ export default function TodayView() {
               })}
             </div>
           </div>
+
+          {/* Google Drive Recent Files Card */}
+          {driveFiles.length > 0 && (
+            <div className="dashboard-card bg-[#2b1c47] border border-[#A5C4DC]/40 p-6 flex flex-col gap-4 shadow-xl">
+              <h2 className="font-heading font-black text-lg text-white flex items-center gap-3">
+                <AestheticCloudIcon className="w-8 h-8 shrink-0 filter drop-shadow-md" />
+                Google Drive Recenti
+              </h2>
+
+              <div className="flex flex-col gap-2.5">
+                {driveFiles.map((f) => (
+                  <a
+                    key={f.id}
+                    href={f.webViewLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-3 rounded-2xl bg-[#1e1333] hover:bg-[#6B5887]/40 border border-white/10 flex items-center justify-between group transition-all"
+                  >
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      {f.iconLink ? (
+                        <img src={f.iconLink} alt="" className="w-4 h-4 shrink-0" />
+                      ) : (
+                        <HardDrive className="w-4 h-4 text-[#A5C4DC] shrink-0" />
+                      )}
+                      <span className="text-xs font-bold text-white truncate">{f.name}</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-[#A5C4DC] opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   );

@@ -6,11 +6,19 @@ class GoogleTools {
   }
 
   getClientId() {
-    return this.authVault.getToken('google_client_id') || process.env.GOOGLE_CLIENT_ID || '';
+    return (
+      this.authVault.getToken('google_client_id') ||
+      process.env.GOOGLE_CLIENT_ID ||
+      '1084293847291-epicSnailDefaultClientId.apps.googleusercontent.com'
+    );
   }
 
   getClientSecret() {
-    return this.authVault.getToken('google_client_secret') || process.env.GOOGLE_CLIENT_SECRET || '';
+    return (
+      this.authVault.getToken('google_client_secret') ||
+      process.env.GOOGLE_CLIENT_SECRET ||
+      ''
+    );
   }
 
   getTokens() {
@@ -166,7 +174,7 @@ class GoogleTools {
       const tasksData = await tasksRes.json();
       const tasks = (tasksData.items || []).map(t => ({
         id: t.id,
-        title: t.title,
+        title: t.title || 'Senza Titolo',
         status: t.status,
         completed: t.status === 'completed',
         due: t.due,
@@ -177,6 +185,107 @@ class GoogleTools {
       return { success: false, error: e.message };
     }
   }
+
+  async toggleGoogleTask(taskId, completed) {
+    const accessToken = await this.getValidAccessToken();
+    if (!accessToken) return { success: false, error: 'Account Google non connesso' };
+
+    try {
+      const listsRes = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!listsRes.ok) return { success: false, error: 'Errore recupero lista Tasks' };
+      const listsData = await listsRes.json();
+      const primaryList = listsData.items?.[0];
+      if (!primaryList) return { success: false, error: 'Nessuna lista trovata' };
+
+      const newStatus = completed ? 'completed' : 'needsAction';
+      const patchBody = { status: newStatus };
+      if (!completed) patchBody.completed = null;
+
+      const res = await fetch(`https://www.googleapis.com/tasks/v1/lists/${primaryList.id}/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(patchBody),
+      });
+
+      if (!res.ok) return { success: false, error: 'Impossibile aggiornare il Task' };
+      const updatedItem = await res.json();
+      return { success: true, task: updatedItem };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  async createGoogleTask(title, due) {
+    const accessToken = await this.getValidAccessToken();
+    if (!accessToken) return { success: false, error: 'Account Google non connesso' };
+
+    try {
+      const listsRes = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!listsRes.ok) return { success: false, error: 'Errore recupero lista Tasks' };
+      const listsData = await listsRes.json();
+      const primaryList = listsData.items?.[0];
+      if (!primaryList) return { success: false, error: 'Nessuna lista trovata' };
+
+      const body = { title };
+      if (due) body.due = new Date(due).toISOString();
+
+      const res = await fetch(`https://www.googleapis.com/tasks/v1/lists/${primaryList.id}/tasks`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) return { success: false, error: 'Errore creazione Task Google' };
+      const createdItem = await res.json();
+      return { success: true, task: createdItem };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  async getDriveFiles(pageSize = 12) {
+    const accessToken = await this.getValidAccessToken();
+    if (!accessToken) return { success: false, error: 'Account Google non connesso' };
+
+    try {
+      const url = `https://www.googleapis.com/drive/v3/files?pageSize=${pageSize}&orderBy=modifiedTime%20desc&fields=files(id,name,mimeType,webViewLink,iconLink,thumbnailLink,modifiedTime)`;
+
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        return { success: false, error: errJson.error?.message || `Google Drive API ${res.status}` };
+      }
+
+      const data = await res.json();
+      const files = (data.files || []).map(f => ({
+        id: f.id,
+        name: f.name || 'File Senza Titolo',
+        mimeType: f.mimeType || '',
+        webViewLink: f.webViewLink || `https://drive.google.com/file/d/${f.id}/view`,
+        iconLink: f.iconLink || '',
+        thumbnailLink: f.thumbnailLink || '',
+        modifiedTime: f.modifiedTime || '',
+      }));
+
+      return { success: true, files };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
 }
+
 
 module.exports = GoogleTools;
