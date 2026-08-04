@@ -1,65 +1,54 @@
-# Piano di Implementazione Dettagliato: FASI 3 & 4 (Spotify & Multi-Provider AI Agent)
+# Implementation Plan - Fase 4: Assistente IA Integrato (Scheda Dedicata & Custom Agent)
 
-Questo piano definisce l'architettura tecnica per il completamento della **Fase 3 (Spotify Integration)** e della **Fase 4 (Multi-Provider AI Engine & Agent Panel)** per l'applicazione **epicSnail**.
+Questo piano definisce la progettazione e l'implementazione dettagliata dell'**Assistente IA a Tutto Schermo** per **epicSnail**, basata sui requisiti definiti durante la sessione di alignment.
 
 ---
 
-## User Review & System Architecture
+## User Review & Specifiche di Design
 
-> [!IMPORTANT]
-> **Modello BYOK & Multi-Provider AI (Frontiera 2026)**
-> L'Agente IA supporterà nativamente tutti i principali provider di modelli aggiornati ad Agosto 2026:
-> 1. **Anthropic Claude**: Claude Opus 5 & Claude Sonnet 5
-> 2. **DeepSeek**: DeepSeek V4 & DeepSeek V4-Flash
-> 3. **Google Gemini**: Gemini 3.6 Flash & 3.5 Pro
-> 4. **OpenAI**: GPT-5.6 (Sol / Terra / Luna)
-> 5. **Ollama**: Modelli Open-Weight locali 100% offline
->
-> Tutte le chiavi API vengono salvate in modo cifrato su disco tramite `authVault.js` (`electron.safeStorage`).
+1. **Accesso & Navigazione**:
+   - Scheda **"Assistente IA"** a tutto schermo integrata direttamente nella **Sidebar** (icona Sparkles/Bot).
+
+2. **Layout Chat a Colonna Singola**:
+   - Interfaccia chat centrale focalizzata, priva di distrazioni.
+   - **Carte d'Azione Interattive (*Human-in-the-Loop*)**: le richieste di scrittura (es. inserimento evento Google Calendar, creazione issue GitHub) appaiono come schede visive all'interno del flusso dei messaggi con pulsanti d'azione *"Approva ed Esegui"* e *"Annulla"*.
+
+3. **Selettore Modello/Tier nell'Header Chat**:
+   - Il **Provider** (es. Google Gemini, Anthropic, DeepSeek, OpenAI, Ollama) viene definito nelle *Impostazioni*.
+   - Nell'header della chat è presente un selettore per cambiare al volo il **Modello/Tier** attivo per quel provider (es. *Gemini 3.6 Flash* vs *Gemini 3.1 Pro*; *Claude Sonnet 5* vs *Claude Opus 5*; *DeepSeek V4-Flash* vs *DeepSeek V4*; *GPT-5.6 Terra* vs *GPT-5.6 Sol*).
+
+4. **Slash Commands (`/`) & Istruzioni Personalizzate**:
+   - Menu/Legenda dei **Comandi Slash (`/`)** digitando `/` nella casella di testo (es. `/calendar`, `/github`, `/spotify`, `/clear`).
+   - **Regole & System Prompt Personalizzati**: pannello configurabile per definire la personalità e le istruzioni di sistema per l'Agente IA.
 
 ---
 
 ## Proposed Changes
 
-### FASE 3: Spotify Web API & Player Component
+### Backend Engine & IPC
 
-#### [NEW] [`electron/spotifyTools.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/spotifyTools.js)
-- Gestione autenticazione OAuth 2.0 PKCE per Spotify (`user-read-playback-state`, `user-modify-playback-state`).
-- Scambio autorizzazione -> `access_token`, `refresh_token`.
-- Metodi API:
-  - `getPlaybackState()`: Stato traccia in riproduzione, copertina album, artista, durata.
-  - `play()`, `pause()`, `next()`, `previous()`: Controlli multimediali.
-- Gestione errori ed eccezioni: gestione esplicita per assenza di dispositivi attivi o account senza abbonamento Premium.
-
-#### [NEW] [`src/components/SpotifyWidget.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/SpotifyWidget.jsx)
-- Widget audio player integrato nel cruscotto.
-- Design perfettamente allineato con i token della palette (`#2b1c47`, `#9D85C6`, `#7A3F67`).
-- Stato di fallback per account disconnessi o senza riproduzione attiva.
+#### [NEW] [`electron/aiEngine.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/aiEngine.js)
+- Motore di esecuzione unificato per chiamate di Function Calling:
+  - Mappatura unificata dei tool su `githubTools`, `googleTools` e `spotifyTools`.
+  - Normalizzazione formati per Anthropic Messages API, DeepSeek/OpenAI Chat Completions, Gemini REST API ed Ollama API.
+  - Inserimento delle **Regole Personalizzate Utente (System Prompt)** in testa ad ogni conversazione.
 
 #### [MODIFY] [`electron/main.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/main.js) & [`electron/preload.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/preload.js)
-- IPC Handlers: `spotify:start-oauth`, `spotify:get-status`, `spotify:get-playback`, `spotify:play`, `spotify:pause`, `spotify:next`, `spotify:previous`.
+- IPC Handlers: `ai:chat-message`, `ai:execute-tool`, `ai:get-rules`, `ai:save-rules`.
 
 ---
 
-### FASE 4: Multi-Provider AI Engine & Agent Panel (Human-in-the-Loop)
-
-#### [NEW] [`electron/aiEngine.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/aiEngine.js)
-- Orchestratore IA centrale e router di Function Calling.
-- Mappatura unificata dei Tool disponibili:
-  - **Google Workspace**: `get_calendar_events`, `create_calendar_event`, `get_google_tasks`.
-  - **GitHub**: `get_github_repos`, `get_github_issues`.
-  - **Spotify**: `get_spotify_playback`, `spotify_play`, `spotify_pause`, `spotify_next`.
-- Normalizzazione dei formati di chiamate per i vari provider:
-  - Anthropic Messages API (formato `tools` e `tool_choice`).
-  - DeepSeek & OpenAI Chat Completions (formato `tools` e `function`).
-  - Google Gemini REST API (formato `functionDeclarations`).
-  - Ollama API locale (formato OpenAI-compatible).
+### UI Frontend (React Renderer)
 
 #### [NEW] [`src/components/AIAgentPanel.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/AIAgentPanel.jsx)
-- Interfaccia chat dell'Assistente IA accessibile dall'Header o da un bottone dedicato in Sidebar.
-- Cronologia conversazione e stato d'esecuzione dei tool.
-- **Modale di Approvazione Visiva (*Human-in-the-Loop*)**:
-  - Quando l'IA richiede di inserire un evento su Google Calendar o creare una issue su GitHub, la chiamata viene sospesa e presentata all'utente per l'approvazione manuale (`Approva` / `Rifiuta`).
+- Vista principale a tutto schermo dell'Assistente IA:
+  - Header con selettore del modello/tier attivo per il provider corrente.
+  - Finestra chat centrale con messaggi utente, risposte dell'assistente e schede d'anteprima delle azioni.
+  - Menu di autocompletamento Comandi Slash (`/`).
+  - Pulsante per aprire il pannello **"Regole & System Prompt"**.
+
+#### [MODIFY] [`src/components/Sidebar.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/Sidebar.jsx) & [`src/App.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/App.jsx)
+- Aggiunta della voce di navigazione **Assistente IA** nella Sidebar e rendering della vista `AIAgentPanel` quando selezionata.
 
 ---
 
@@ -71,11 +60,7 @@ npm run build
 ```
 
 ### Manual Verification
-1. **Test Fase 3 (Spotify)**:
-   - Login OAuth PKCE con Spotify.
-   - Riproduzione brano e verifica aggiornamento copertina/titolo nel widget.
-   - Test pulsanti Play/Pause/Next.
-2. **Test Fase 4 (Agente Multi-Provider)**:
-   - Configurazione chiave Anthropic / DeepSeek / Gemini / OpenAI / Ollama nelle Impostazioni.
-   - Invio prompt di lettura (*"Quali impegni ho oggi su Google Calendar e che brano sto ascoltando su Spotify?"*).
-   - Invio prompt di scrittura (*"Aggiungi un evento domani alle 10 su Google Calendar"*), verificando la comparsa della modale di conferma prima che la chiamata API venga inviata.
+1. **Test Navigazione**: Cliccare sulla voce "Assistente IA" nella Sidebar e verificare l'apertura della vista a tutto schermo.
+2. **Test Cambio Modello/Tier**: Selezionare modelli diversi dal dropdown dell'header e verificare che le richieste vengano indirizzate al tier corretto.
+3. **Test Slash Commands (`/`)**: Digitare `/` nella casella di testo e selezionare un comando dalla legenda.
+4. **Test Human-in-the-Loop**: Inviare una richiesta di scrittura (*"Aggiungi un evento domani su Google Calendar"*) e verificare la comparsa della card visiva d'approvazione prima dell'esecuzione della chiamata HTTP.
