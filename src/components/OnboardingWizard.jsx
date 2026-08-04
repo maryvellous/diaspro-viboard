@@ -8,7 +8,10 @@ export default function OnboardingWizard() {
 
   // Form states
   const [name, setName] = useState('');
-  const [geminiKey, setGeminiKey] = useState('');
+  
+  // AI Provider states
+  const [provider, setProvider] = useState('anthropic'); // 'anthropic' | 'deepseek' | 'gemini' | 'openai' | 'ollama'
+  const [apiKey, setApiKey] = useState('');
   const [aiTesting, setAiTesting] = useState(false);
   const [aiStatus, setAiStatus] = useState(null); // { success: bool, message: string }
 
@@ -17,17 +20,26 @@ export default function OnboardingWizard() {
   const [ghUser, setGhUser] = useState(null); // { login, avatar_url, name }
   const [ghError, setGhError] = useState('');
 
+  const providerInfo = {
+    anthropic: { name: 'Anthropic (Claude)', link: 'https://console.anthropic.com/settings/keys', placeholder: 'sk-ant-api...' },
+    deepseek: { name: 'DeepSeek', link: 'https://platform.deepseek.com/api_keys', placeholder: 'sk-...' },
+    gemini: { name: 'Google Gemini', link: 'https://aistudio.google.com/app/apikey', placeholder: 'AIzaSy...' },
+    openai: { name: 'OpenAI', link: 'https://platform.openai.com/api-keys', placeholder: 'sk-proj-...' },
+    ollama: { name: 'Ollama (Locale)', link: 'https://ollama.com', placeholder: 'http://localhost:11434' },
+  };
+
   // Test AI Key
   const handleTestAiKey = async () => {
-    if (!geminiKey.trim()) return;
+    if (provider !== 'ollama' && !apiKey.trim()) return;
     setAiTesting(true);
     setAiStatus(null);
     if (window.electronAPI) {
-      const res = await window.electronAPI.testAiKey(geminiKey.trim());
+      const res = await window.electronAPI.testAiKey(provider, apiKey.trim());
       setAiTesting(false);
       setAiStatus(res);
       if (res.success) {
-        await window.electronAPI.saveToken('gemini_api_key', geminiKey.trim());
+        await window.electronAPI.saveToken(`${provider}_api_key`, apiKey.trim());
+        await window.electronAPI.saveToken('selected_ai_provider', provider);
       }
     } else {
       setAiTesting(false);
@@ -122,49 +134,87 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          {/* STEP 2: INTELLIGENZA ARTIFICIALE (BYOK) */}
+          {/* STEP 2: INTELLIGENZA ARTIFICIALE (MULTI-PROVIDER BYOK) */}
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <div>
                 <h3 className="font-heading font-bold text-xl text-white mb-2">
-                  Configurazione API IA
+                  Seleziona Provider IA
                 </h3>
                 <p className="text-xs text-white/70 leading-relaxed font-body">
-                  Inserisci la tua Google Gemini API Key per consentire all'agente di elaborare le tue richieste.
+                  Scegli quale provider utilizzare ed inserisci la tua chiave API personale.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-mono font-semibold text-[#9D85C6] uppercase tracking-wider">
-                    Gemini API Key
+                    Provider
                   </label>
-                  <a
-                    href="https://aistudio.google.com/app/apikey"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-[#A5C4DC] hover:underline flex items-center gap-1 font-mono"
+                  <select
+                    value={provider}
+                    onChange={(e) => {
+                      setProvider(e.target.value);
+                      setApiKey('');
+                      setAiStatus(null);
+                    }}
+                    className="bg-black/40 border border-white/20 text-white rounded-2xl px-5 py-3.5 font-bold text-sm focus:outline-none focus:border-[#9D85C6]"
                   >
-                    Ottieni chiave API <ExternalLink className="w-3 h-3" />
-                  </a>
+                    <option value="anthropic" className="bg-[#2b1c47] text-white">Anthropic (Claude)</option>
+                    <option value="deepseek" className="bg-[#2b1c47] text-white">DeepSeek</option>
+                    <option value="gemini" className="bg-[#2b1c47] text-white">Google Gemini</option>
+                    <option value="openai" className="bg-[#2b1c47] text-white">OpenAI</option>
+                    <option value="ollama" className="bg-[#2b1c47] text-white">Ollama (Locale)</option>
+                  </select>
                 </div>
 
-                <div className="flex gap-3">
-                  <input
-                    type="password"
-                    placeholder="Incolla qui la chiave API..."
-                    value={geminiKey}
-                    onChange={(e) => setGeminiKey(e.target.value)}
-                    className="flex-1 bg-black/30 border border-white/20 text-white rounded-2xl px-5 py-3.5 font-mono text-xs focus:outline-none focus:border-[#9D85C6]"
-                  />
-                  <button
-                    onClick={handleTestAiKey}
-                    disabled={aiTesting || !geminiKey.trim()}
-                    className="action-pill bg-[#9D85C6] hover:bg-[#6B5887] text-white disabled:opacity-50"
-                  >
-                    {aiTesting ? 'Verifica...' : 'Test Chiave'}
-                  </button>
-                </div>
+                {provider !== 'ollama' && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-mono font-semibold text-[#9D85C6] uppercase tracking-wider">
+                        Chiave API {providerInfo[provider].name}
+                      </label>
+                      <a
+                        href={providerInfo[provider].link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-[#A5C4DC] hover:underline flex items-center gap-1 font-mono"
+                      >
+                        Ottieni chiave API <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <input
+                        type="password"
+                        placeholder={providerInfo[provider].placeholder}
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="flex-1 bg-black/30 border border-white/20 text-white rounded-2xl px-5 py-3.5 font-mono text-xs focus:outline-none focus:border-[#9D85C6]"
+                      />
+                      <button
+                        onClick={handleTestAiKey}
+                        disabled={aiTesting || !apiKey.trim()}
+                        className="action-pill bg-[#9D85C6] hover:bg-[#6B5887] text-white disabled:opacity-50"
+                      >
+                        {aiTesting ? 'Verifica...' : 'Test Chiave'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {provider === 'ollama' && (
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-xs font-mono text-white/70">Endpoint: http://localhost:11434</span>
+                    <button
+                      onClick={handleTestAiKey}
+                      disabled={aiTesting}
+                      className="action-pill bg-[#9D85C6] hover:bg-[#6B5887] text-white"
+                    >
+                      {aiTesting ? 'Verifica...' : 'Test Ollama'}
+                    </button>
+                  </div>
+                )}
 
                 {aiStatus && (
                   <div className={`p-3.5 rounded-2xl border text-xs font-mono font-semibold ${

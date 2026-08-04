@@ -29,7 +29,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getGitHubIssues: () => ipcRenderer.invoke('github:get-issues'),
 
   // AI Key Test
-  testAiKey: (apiKey) => ipcRenderer.invoke('ai:test-key', apiKey),
+  testAiKey: (provider, apiKey) => ipcRenderer.invoke('ai:test-key', { provider, apiKey }),
+
 
   // Google Integration
   startGoogleOAuth: () => ipcRenderer.invoke('google:start-oauth'),

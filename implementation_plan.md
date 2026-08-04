@@ -1,69 +1,61 @@
-# Implementation Plan - Fase 2: Google Workspace OAuth 2.0 (Calendar & Tasks)
+# Implementation Plan - Multi-Provider AI Engine (Gemini, Anthropic, DeepSeek, OpenAI, Ollama)
 
-Integrazione dell'autenticazione OAuth 2.0 + PKCE per consentire a **epicSnail** di connettersi in modo sicuro a Google Workspace, recuperare e creare eventi in Google Calendar e gestire le liste di attività di Google Tasks, salvando i token cifrati nel Vault nativo dell'app (`authVault.js`).
+Questo aggiornamento estende il motore dell'Agente IA per supportare multipli provider di intelligenza artificiale con il modello **BYOK (Bring Your Own Key)**.
 
----
-
-## User Review & Configuration
-
-- **Flusso OAuth**: OAuth 2.0 + PKCE per applicazioni desktop native.
-- **Client ID**: Inserimento opzionale del `Google Client ID` (e facoltativamente `Client Secret`) nelle Impostazioni / Onboarding (modello BYOK), con supporto a credenziali desktop standard.
-- **Scope Autorizzati**:
-  - `https://www.googleapis.com/auth/calendar.events` (lettura/scrittura eventi Google Calendar)
-  - `https://www.googleapis.com/auth/tasks` (lettura/scrittura attività Google Tasks)
+L'utente potrà scegliere liberamente quale provider e modello utilizzare per guidare l'assistente desktop:
+- **Google Gemini** (Gemini 2.0 Flash / Pro)
+- **Anthropic Claude** (Claude 3.5 Sonnet / Haiku)
+- **DeepSeek** (DeepSeek-V3 / DeepSeek-R1 via endpoint compatibile OpenAI)
+- **OpenAI** (GPT-4o / GPT-4o-mini)
+- **Ollama / Local LLM** (100% offline su `http://localhost:11434`)
 
 ---
 
-## Proposed Changes
+## Architecture: Multi-Provider AI Engine ([`electron/aiEngine.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/aiEngine.js))
 
-### Backend Process (Electron Main & Auth)
-
-#### [NEW] [`electron/oauthManager.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/oauthManager.js)
-- Gestione flusso PKCE (generation `code_verifier` & `code_challenge` S256).
-- Listener HTTP su porta dinamica loopback (`http://127.0.0.1:0/callback`) per intercettare il callback authorization code.
-- Scambio codice -> token (`access_token`, `refresh_token`, `expires_at`).
-- Pagina di successo HTML per l'utente al termine dell'autenticazione.
-
-#### [NEW] [`electron/googleTools.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/googleTools.js)
-- Client API Google Workspace nativo via `fetch`.
-- Refresh automatico del token d'accesso (`refresh_token`) al 401.
-- `getCalendarEvents()`: recupero eventi imminenti.
-- `createCalendarEvent(eventData)`: aggiunta evento su Google Calendar.
-- `getGoogleTasks()`: recupero attività da Google Tasks.
-- `getConnectionStatus()`: stato connessione (`connected`, `expired`, `disconnected`).
-
-#### [MODIFY] [`electron/authVault.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/authVault.js)
-- Supporto al salvataggio cifrato di `google_tokens` e credenziali `google_client_id`.
-
-#### [MODIFY] [`electron/main.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/main.js)
-- Registrazione IPC Handlers: `google:start-oauth`, `google:get-status`, `google:disconnect`, `google:get-events`, `google:create-event`, `google:get-tasks`.
-
-#### [MODIFY] [`electron/preload.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/preload.js)
-- Esposizione di `window.electronAPI.google.*`.
-
----
-
-### UI Frontend (React Renderer)
-
-#### [MODIFY] [`src/components/GoogleCalendarWidget.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/GoogleCalendarWidget.jsx)
-- Gestione dei 3 stati: Non connesso, Connesso (eventi reali & creazione), Token Scaduto.
-
-#### [MODIFY] [`src/components/SettingsView.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/SettingsView.jsx)
-- Sezione Google Workspace Configuration (Client ID, Stato connessione, Disconnetti).
-
-#### [MODIFY] [`src/components/TodayView.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/TodayView.jsx)
-- Integrazione eventi del giorno reali nel widget riepilogativo.
-
----
-
-## Verification Plan
-
-### Automated Tests
-```powershell
-npm run build
+```
+                               +-----------------------------+
+                               |     React UI (Chat Panel)   |
+                               +-----------------------------+
+                                              |
+                                              v
+                               +-----------------------------+
+                               |  Unified AI Engine Router   |
+                               |    (electron/aiEngine.js)   |
+                               +-----------------------------+
+                                              |
+      +-------------------+-------------------+-------------------+-------------------+
+      |                   |                   |                   |                   |
+      v                   v                   v                   v                   v
+[Google Gemini]   [Anthropic Claude]     [DeepSeek API]        [OpenAI]         [Ollama Local]
+ (Gemini API)       (v1/messages)    (api.deepseek.com)  (v1/chat/completions) (localhost:11434)
 ```
 
-### Manual Verification
-1. Test flusso OAuth 2.0 PKCE con apertura browser di sistema.
-2. Test caricamento ed inserimento eventi reali su Google Calendar.
-3. Test refresh token automatico e disconnessione.
+---
+
+## Vault & Storage Changes
+
+### [`electron/authVault.js`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/electron/authVault.js)
+Salvataggio cifrato nel Vault per ciascuna chiave API:
+- `gemini_api_key`
+- `anthropic_api_key`
+- `deepseek_api_key`
+- `openai_api_key`
+- `selected_ai_provider`: `'gemini' | 'anthropic' | 'deepseek' | 'openai' | 'ollama'`
+
+---
+
+## Configuration & Settings UI
+
+### [`src/components/OnboardingWizard.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/OnboardingWizard.jsx) & [`src/components/SettingsView.jsx`](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/src/components/SettingsView.jsx)
+- Menu a tendina per la selezione del **Provider IA**:
+  - `Google Gemini`
+  - `Anthropic (Claude)`
+  - `DeepSeek`
+  - `OpenAI`
+  - `Ollama (Locale)`
+- Campo di inserimento dinamico con link diretto per ottenere la chiave del provider selezionato:
+  - Anthropic: `console.anthropic.com`
+  - DeepSeek: `platform.deepseek.com`
+  - Google Gemini: `aistudio.google.com`
+- Pulsante **"Test Connessione Provider"** universale per verificare la validità di ciascuna chiave API in tempo reale.
