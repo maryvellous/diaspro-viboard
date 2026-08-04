@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, FolderGit2, CheckCircle2, Settings, Sparkles, Music } from 'lucide-react';
+import { Calendar, FolderGit2, CheckCircle2, Settings, Sparkles, Music, Bot } from 'lucide-react';
 import { useGamification } from '../context/GamificationContext';
 
 export default function Sidebar({ currentTab, setCurrentTab }) {
@@ -11,6 +11,7 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
     { id: 'projects', icon: FolderGit2, label: 'Progetti' },
     { id: 'calendar', icon: Calendar, label: 'Calendario' },
     { id: 'spotify', icon: Music, label: 'Spotify' },
+    { id: 'chat', icon: Bot, label: 'Interfaccia Chat' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 

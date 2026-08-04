@@ -7,12 +7,14 @@ const GitHubTools = require('./githubTools');
 const OAuthManager = require('./oauthManager');
 const GoogleTools = require('./googleTools');
 const SpotifyTools = require('./spotifyTools');
+const AIEngine = require('./aiEngine');
 
 const store = new LocalStore();
 const authVault = new AuthVault();
 const githubTools = new GitHubTools(authVault);
 const googleTools = new GoogleTools(authVault);
 const spotifyTools = new SpotifyTools(authVault);
+const aiEngine = new AIEngine(authVault, store, githubTools, googleTools, spotifyTools);
 let mainWindow = null;
 
 function checkDevServer(url) {
@@ -294,6 +296,24 @@ ipcMain.handle('ai:test-key', async (event, { provider, apiKey }) => {
     return { success: false, error: e.message };
   }
 });
+
+// Chat & Context IPC Handlers
+ipcMain.handle('api:chat-message', async (event, data) => {
+  return await aiEngine.handleChatMessage(data);
+});
+
+ipcMain.handle('api:execute-tool', async (event, { toolName, params }) => {
+  return await aiEngine.executeTool(toolName, params);
+});
+
+ipcMain.handle('api:get-context', async () => {
+  return aiEngine.getContextHeader();
+});
+
+ipcMain.handle('api:save-context', async (event, contextHeader) => {
+  return aiEngine.saveContextHeader(contextHeader);
+});
+
 
 
 

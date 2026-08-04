@@ -16,8 +16,17 @@ import OnboardingWizard from './components/OnboardingWizard';
 import { useGamification } from './context/GamificationContext';
 
 import SpotifyWidget from './components/SpotifyWidget';
+import ChatPanel from './components/ChatPanel';
 
 function MainContent({ currentTab, onOpenSearch }) {
+  if (currentTab === 'chat') {
+    return (
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <ChatPanel />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-gradient-to-b from-[#432A69] via-[#2f1d4b] to-[#1c0f32]">
       <Header onOpenSearch={onOpenSearch} />

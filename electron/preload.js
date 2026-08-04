@@ -49,6 +49,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   spotifyPause: () => ipcRenderer.invoke('spotify:pause'),
   spotifyNext: () => ipcRenderer.invoke('spotify:next'),
   spotifyPrevious: () => ipcRenderer.invoke('spotify:previous'),
+
+  // Chat & Context Integration
+  sendChatMessage: (data) => ipcRenderer.invoke('api:chat-message', data),
+  executeTool: (toolName, params) => ipcRenderer.invoke('api:execute-tool', { toolName, params }),
+  getContextHeader: () => ipcRenderer.invoke('api:get-context'),
+  saveContextHeader: (header) => ipcRenderer.invoke('api:save-context', header),
 });
 
 

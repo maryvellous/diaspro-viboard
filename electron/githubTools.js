@@ -112,6 +112,43 @@ class GitHubTools {
       return { success: false, error: e.message };
     }
   }
+
+  async createIssue({ repo, title, body }) {
+    const pat = this.getToken();
+    if (!pat) return { success: false, error: 'Token non configurato' };
+    if (!repo || !title) return { success: false, error: 'Repository e titolo sono obbligatori' };
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${pat}`,
+          'User-Agent': 'epicSnail-Desktop',
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, body: body || '' }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { success: false, error: err.message || `GitHub API status ${res.status}` };
+      }
+
+      const issue = await res.json();
+      return {
+        success: true,
+        issue: {
+          id: issue.id,
+          number: issue.number,
+          title: issue.title,
+          html_url: issue.html_url,
+        },
+      };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
 }
 
 module.exports = GitHubTools;
