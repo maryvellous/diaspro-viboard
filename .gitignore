@@ -12,12 +12,15 @@ build/
 # Assets & Inspiration (personal/internal)
 aesteticvibe/
 
-# Environment & Local secrets
+# Environment & Local secrets / Local Databases
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+epicSnail_store.json
+*.db
+*.sqlite
 
 # Logs
 logs
