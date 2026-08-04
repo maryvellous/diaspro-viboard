@@ -55,6 +55,8 @@ export default function ProjectsView() {
     { id: 'sand', name: 'Sabbia Dorata', bg: '#E8D19E' },
     { id: 'lavender', name: 'Lavanda Soft', bg: '#9D85C6' },
     { id: 'plum', name: 'Prugna Intenso', bg: '#7A3F67' },
+    { id: 'terracotta', name: 'Terracotta Caldo', bg: '#8F5A5A' },
+    { id: 'warm-sand', name: 'Sabbia Calda', bg: '#BC957D' },
     { id: 'default', name: 'Scuro Cozy', bg: '#2b1c47' },
   ];
 
@@ -126,7 +128,7 @@ export default function ProjectsView() {
           const defaultPaletteColor = COLOR_OPTIONS[idx % (COLOR_OPTIONS.length - 1)].id;
           const themeColor = projectColors[project.id] || defaultPaletteColor;
           const hasTasks = projectTasks.length > 0;
-          const isDarkTheme = themeColor === 'plum' || themeColor === 'default';
+          const isDarkTheme = themeColor === 'plum' || themeColor === 'terracotta' || themeColor === 'default';
 
           const isOverlayOpen = activePostItId === project.id;
 

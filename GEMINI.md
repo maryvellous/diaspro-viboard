@@ -7,6 +7,8 @@
   - Sidebar Purple: `#6B5887`
   - Lavender Accent: `#9D85C6`
   - Plum Accent: `#7A3F67`
+  - Terracotta Accent: `#8F5A5A`
+  - Warm Sand Accent: `#BC957D`
   - Sand Accent: `#E8D19E`
   - Blue Accent: `#A5C4DC`
   - Sage Accent: `#98A78A`

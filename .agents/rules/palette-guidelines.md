@@ -9,6 +9,8 @@ Whenever creating or modifying React components or UI elements for epicSnail, yo
 - **Sidebar Purple (`--sidebar-purple`)**: `#6B5887`
 - **Lavender Accent (`--palette-lavender`)**: `#9D85C6`
 - **Plum Accent (`--palette-plum`)**: `#7A3F67`
+- **Terracotta Accent (`--palette-terracotta`)**: `#8F5A5A`
+- **Warm Sand Accent (`--palette-warm-sand`)**: `#BC957D`
 - **Sand Accent (`--palette-sand`)**: `#E8D19E`
 - **Blue Accent (`--palette-blue`)**: `#A5C4DC`
 - **Sage Accent (`--palette-sage`)**: `#98A78A`

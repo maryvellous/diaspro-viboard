@@ -13,6 +13,8 @@
   --palette-sand: #E8D19E;
   --palette-lavender: #9D85C6;
   --palette-plum: #7A3F67;
+  --palette-terracotta: #8F5A5A;
+  --palette-warm-sand: #BC957D;
 
   --font-heading: 'Outfit', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
@@ -186,6 +188,16 @@ html, body {
 .theme-plum {
   background-color: var(--palette-plum) !important;
   color: #ffffff !important;
+}
+
+.theme-terracotta {
+  background-color: var(--palette-terracotta) !important;
+  color: #ffffff !important;
+}
+
+.theme-warm-sand {
+  background-color: var(--palette-warm-sand) !important;
+  color: #2e1d14 !important;
 }
 
 .theme-default {
