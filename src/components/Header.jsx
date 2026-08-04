@@ -8,7 +8,7 @@ export default function Header({ onOpenSearch }) {
   const { refreshProjects, loading } = useProjects();
 
   return (
-    <header className="h-20 px-10 flex items-center justify-between border-b border-white/10 bg-black/20 backdrop-blur-xl drag-region select-none">
+    <header className="h-20 pl-10 pr-36 flex items-center justify-between border-b border-white/10 bg-black/20 backdrop-blur-xl drag-region select-none">
       {/* Search Bar Action Pill */}
       <div className="flex items-center gap-4 no-drag">
         <button
