@@ -24,29 +24,32 @@ export function ProjectsProvider({ children }) {
     if (window.electronAPI) {
       try {
         const localRepos = await window.electronAPI.scanRepos();
+        let combined = Array.isArray(localRepos) ? [...localRepos] : [];
         
-        // Fetch remote GitHub repos if token exists
-        let combined = [...localRepos];
-        const ghResult = await window.electronAPI.getGitHubRepos();
-        if (ghResult && ghResult.success && ghResult.repos) {
-          const remoteRepos = ghResult.repos.map(r => ({
-            id: `gh_${r.id}`,
-            name: r.name,
-            path: r.html_url,
-            branch: 'github',
-            clean: true,
-            isGitHubRemote: true,
-            stargazers_count: r.stargazers_count,
-            open_issues_count: r.open_issues_count,
-            recentCommits: [{ hash: 'remote', message: r.description || 'Repository GitHub remota', date: r.updated_at.split('T')[0] }]
-          }));
+        // Fetch remote GitHub repos safely (do not block local repos on network error)
+        try {
+          const ghResult = await window.electronAPI.getGitHubRepos();
+          if (ghResult && ghResult.success && Array.isArray(ghResult.repos)) {
+            const remoteRepos = ghResult.repos.map(r => ({
+              id: `gh_${r.id}`,
+              name: r.name,
+              path: r.html_url,
+              branch: 'github',
+              clean: true,
+              isGitHubRemote: true,
+              stargazers_count: r.stargazers_count,
+              open_issues_count: r.open_issues_count,
+              recentCommits: [{ hash: 'remote', message: r.description || 'Repository GitHub remota', date: r.updated_at.split('T')[0] }]
+            }));
 
-          // Merge without duplicating if local repo has same name
-          remoteRepos.forEach(rem => {
-            if (!combined.some(l => l.name.toLowerCase() === rem.name.toLowerCase())) {
-              combined.push(rem);
-            }
-          });
+            remoteRepos.forEach(rem => {
+              if (!combined.some(l => l.name && l.name.toLowerCase() === rem.name.toLowerCase())) {
+                combined.push(rem);
+              }
+            });
+          }
+        } catch (ghErr) {
+          console.warn('GitHub repos fetch error ignored:', ghErr);
         }
 
         setProjects(combined);

@@ -119,6 +119,25 @@ export default function ProjectsView() {
         </div>
       </div>
 
+      {/* Empty State when no repos found */}
+      {projects.length === 0 && (
+        <div className="dashboard-card bg-[#2b1c47] border border-[#7A3F67]/40 p-12 text-center flex flex-col items-center justify-center gap-4 max-w-xl mx-auto my-12 shadow-2xl">
+          <FolderOpen className="w-14 h-14 text-[#9D85C6] animate-bounce" />
+          <h2 className="font-heading font-black text-2xl text-white">Nessun Progetto Git Trovato</h2>
+          <p className="text-sm text-[#A5C4DC] font-sans leading-relaxed">
+            Non abbiamo individuato repository Git nei percorsi locali configurati o nei collegamenti GitHub.
+          </p>
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              onClick={refreshProjects}
+              className="action-pill bg-[#6B5887] hover:bg-[#7A3F67] text-white font-bold"
+            >
+              Riscansiona Progetti
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Projects Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-10 items-start">
         {projects.map((project, idx) => {

@@ -8,6 +8,7 @@ const OAuthManager = require('./oauthManager');
 const GoogleTools = require('./googleTools');
 const SpotifyTools = require('./spotifyTools');
 const AIEngine = require('./aiEngine');
+const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
 
 const store = new LocalStore();
 const authVault = new AuthVault();
