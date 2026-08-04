@@ -64,6 +64,7 @@ export default function ChatPanel() {
   const [slashFilter, setSlashFilter] = useState('');
 
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (window.electronAPI) {
@@ -467,25 +468,34 @@ export default function ChatPanel() {
             </div>
           )}
 
-          {/* INPUT BAR */}
-          <div className="flex items-center gap-2 bg-[#1e1333] border border-[#9D85C6]/40 focus-within:border-[#9D85C6] rounded-full p-2 shadow-2xl transition-all">
-            <input
-              type="text"
+          {/* INPUT BAR WITH AUTO-EXPANDING TEXTAREA */}
+          <div className="flex items-end gap-2 bg-[#1e1333] border border-[#9D85C6]/40 focus-within:border-[#9D85C6] rounded-3xl p-2.5 shadow-2xl transition-all">
+            <textarea
+              ref={textareaRef}
+              rows={1}
               value={inputText}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+                e.target.style.height = 'auto';
+                e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   sendMessage();
+                  if (textareaRef.current) textareaRef.current.style.height = 'auto';
                 }
               }}
-              placeholder="Scrivi un messaggio o digita / per i comandi rapidi..."
-              className="flex-1 bg-transparent border-none text-white text-sm px-4 focus:outline-none placeholder-[#9D85C6]/50 font-sans"
+              placeholder="Scrivi un messaggio o digita / per i comandi rapidi... (Invio per inviare, Shift+Invio a capo)"
+              className="flex-1 bg-transparent border-none text-white text-sm px-4 py-1 focus:outline-none placeholder-[#9D85C6]/50 font-sans resize-none overflow-y-auto max-h-40 leading-relaxed"
             />
             <button
-              onClick={() => sendMessage()}
+              onClick={() => {
+                sendMessage();
+                if (textareaRef.current) textareaRef.current.style.height = 'auto';
+              }}
               disabled={!inputText.trim() || isLoading}
-              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-md ${
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer shadow-md shrink-0 ${
                 inputText.trim() && !isLoading
                   ? 'bg-[#6B5887] hover:bg-[#7A3F67] text-white hover:scale-105 active:scale-95 border border-white/20'
                   : 'bg-white/10 text-gray-500 cursor-not-allowed'
