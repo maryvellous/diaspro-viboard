@@ -2,6 +2,8 @@ const { app } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
+const os = require('os');
+
 class LocalStore {
   constructor(filename = 'epicSnail_store.json') {
     const userDataPath = app ? app.getPath('userData') : process.cwd();
@@ -19,14 +21,17 @@ class LocalStore {
     }
     return {
       user: {
+        name: '',
+        firstLaunchCompleted: false,
         xp: 150,
         level: 1,
         streak: 1,
         lastActiveDate: new Date().toISOString().split('T')[0],
         unlockedBadges: ['b1'], // 'b1': Welcome to epicSnail!
+        aiProvider: 'gemini',
       },
       scanPaths: [
-        path.join(process.env.USERPROFILE || 'C:\\Users\\Clark', 'Desktop'),
+        path.join(os.homedir(), 'Desktop'),
       ],
       tasks: [], // { id, projectId, title, completed: bool, dueDate, priority, xpReward: 25 }
       notes: {}, // { [projectId]: "markdown string" }

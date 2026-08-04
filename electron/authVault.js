@@ -1,0 +1,134 @@
+const { safeStorage, app } = require('electron');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+class AuthVault {
+  constructor(filename = 'epicSnail_vault.json') {
+    const userDataPath = app ? app.getPath('userData') : process.cwd();
+    this.vaultPath = path.join(userDataPath, filename);
+    this.data = this.loadVault();
+  }
+
+  loadVault() {
+    try {
+      if (fs.existsSync(this.vaultPath)) {
+        return JSON.parse(fs.readFileSync(this.vaultPath, 'utf8'));
+      }
+    } catch (e) {
+      console.error('Error loading AuthVault file:', e);
+    }
+    return {};
+  }
+
+  saveVault() {
+    try {
+      fs.writeFileSync(this.vaultPath, JSON.stringify(this.data, null, 2));
+    } catch (e) {
+      console.error('Error saving AuthVault file:', e);
+    }
+  }
+
+  // Fallback AES encryption key derived from OS machine ID / app path if safeStorage unavailable
+  getFallbackKey() {
+    const secret = process.env.COMPUTERNAME || process.env.HOSTNAME || 'epicSnail-fallback-key';
+    return crypto.createHash('sha256').update(secret).digest();
+  }
+
+  encryptValue(plainText) {
+    if (!plainText) return null;
+    try {
+      if (safeStorage && safeStorage.isEncryptionAvailable()) {
+        const encryptedBuffer = safeStorage.encryptString(plainText);
+        return {
+          method: 'safeStorage',
+          content: encryptedBuffer.toString('base64'),
+        };
+      }
+    } catch (e) {
+      console.warn('safeStorage encryption failed, using AES fallback:', e);
+    }
+
+    // AES-256-CTR Fallback
+    try {
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv('aes-256-ctr', this.getFallbackKey(), iv);
+      const encrypted = Buffer.concat([cipher.update(plainText, 'utf8'), cipher.final()]);
+      return {
+        method: 'fallbackAES',
+        iv: iv.toString('hex'),
+        content: encrypted.toString('hex'),
+      };
+    } catch (e) {
+      console.error('AES encryption fallback failed:', e);
+      return null;
+    }
+  }
+
+  decryptValue(entry) {
+    if (!entry || !entry.content) return null;
+    try {
+      if (entry.method === 'safeStorage' && safeStorage && safeStorage.isEncryptionAvailable()) {
+        const buffer = Buffer.from(entry.content, 'base64');
+        return safeStorage.decryptString(buffer);
+      }
+    } catch (e) {
+      console.warn('safeStorage decryption failed, checking fallback:', e);
+    }
+
+    // AES-256-CTR Fallback decryption
+    if (entry.method === 'fallbackAES' || entry.iv) {
+      try {
+        const iv = Buffer.from(entry.iv, 'hex');
+        const decipher = crypto.createDecipheriv('aes-256-ctr', this.getFallbackKey(), iv);
+        const decrypted = Buffer.concat([decipher.update(Buffer.from(entry.content, 'hex')), decipher.final()]);
+        return decrypted.toString('utf8');
+      } catch (e) {
+        console.error('AES decryption failed:', e);
+      }
+    }
+    return null;
+  }
+
+  saveToken(service, secretData) {
+    // secretData can be a string (e.g. PAT / API key) or an object (e.g. { access_token, refresh_token })
+    const strToEncrypt = typeof secretData === 'string' ? secretData : JSON.stringify(secretData);
+    const encrypted = this.encryptValue(strToEncrypt);
+    if (encrypted) {
+      this.data[service] = {
+        ...encrypted,
+        updatedAt: new Date().toISOString(),
+      };
+      this.saveVault();
+      return true;
+    }
+    return false;
+  }
+
+  getToken(service) {
+    const entry = this.data[service];
+    if (!entry) return null;
+    const decryptedStr = this.decryptValue(entry);
+    if (!decryptedStr) return null;
+    try {
+      return JSON.parse(decryptedStr);
+    } catch (e) {
+      return decryptedStr; // raw string
+    }
+  }
+
+  removeToken(service) {
+    if (this.data[service]) {
+      delete this.data[service];
+      this.saveVault();
+      return true;
+    }
+    return false;
+  }
+
+  hasToken(service) {
+    return !!this.data[service];
+  }
+}
+
+module.exports = AuthVault;

@@ -3,7 +3,7 @@ import { Calendar, FolderGit2, CheckCircle2, Settings, Sparkles } from 'lucide-r
 import { useGamification } from '../context/GamificationContext';
 
 export default function Sidebar({ currentTab, setCurrentTab }) {
-  const { level, streak } = useGamification();
+  const { userName, level, streak } = useGamification();
   const [snailSpeech, setSnailSpeech] = useState(false);
 
   const navItems = [
@@ -44,12 +44,12 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
         </nav>
       </div>
 
-      {/* Bottom Mascot - epicSnail (Mary's Mascot) */}
+      {/* Bottom Mascot - epicSnail */}
       <div className="relative group flex flex-col items-center mb-2">
         {/* Speech Bubble */}
         {snailSpeech && (
           <div className="absolute -top-14 left-16 whitespace-nowrap bg-black/90 text-white font-bold text-xs px-4 py-2 rounded-2xl border border-white/30 shadow-2xl backdrop-blur-xl animate-bounce z-50">
-            Ciao Mary! 🐌✨ (Lvl {level})
+            Ciao {userName || 'Avventuriero'}! 🐌✨ (Lvl {level})
           </div>
         )}
 

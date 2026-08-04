@@ -5,6 +5,8 @@ import { soundFX } from '../utils/audio';
 const GamificationContext = createContext();
 
 export function GamificationProvider({ children }) {
+  const [userName, setUserName] = useState('');
+  const [firstLaunchCompleted, setFirstLaunchCompleted] = useState(true);
   const [xp, setXp] = useState(150);
   const [level, setLevel] = useState(1);
   const [streak, setStreak] = useState(1);
@@ -24,6 +26,8 @@ export function GamificationProvider({ children }) {
     if (window.electronAPI) {
       window.electronAPI.getStoreData().then((data) => {
         if (data && data.user) {
+          setUserName(data.user.name || '');
+          setFirstLaunchCompleted(data.user.firstLaunchCompleted ?? false);
           setXp(data.user.xp || 150);
           setLevel(data.user.level || 1);
           setStreak(data.user.streak || 1);
@@ -34,15 +38,23 @@ export function GamificationProvider({ children }) {
   }, []);
 
   // Save changes
-  const saveUserProgress = (newXp, newLevel, newStreak, newBadges) => {
+  const saveUserProgress = (newXp, newLevel, newStreak, newBadges, name = userName, firstLaunch = firstLaunchCompleted) => {
     if (window.electronAPI) {
       window.electronAPI.setStoreData('user', {
+        name,
+        firstLaunchCompleted: firstLaunch,
         xp: newXp,
         level: newLevel,
         streak: newStreak,
         unlockedBadges: newBadges,
       });
     }
+  };
+
+  const completeOnboarding = (name) => {
+    setUserName(name);
+    setFirstLaunchCompleted(true);
+    saveUserProgress(xp, level, streak, unlockedBadges, name, true);
   };
 
   const addXp = (amount, reason = '') => {
@@ -77,6 +89,10 @@ export function GamificationProvider({ children }) {
   return (
     <GamificationContext.Provider
       value={{
+        userName,
+        setUserName,
+        firstLaunchCompleted,
+        completeOnboarding,
         xp,
         level,
         streak,

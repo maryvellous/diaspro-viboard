@@ -16,4 +16,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Storage
   getStoreData: () => ipcRenderer.invoke('store:get-all'),
   setStoreData: (key, val) => ipcRenderer.invoke('store:set', { key, val }),
+
+  // Vault & Auth
+  saveToken: (service, token) => ipcRenderer.invoke('auth:save-token', { service, token }),
+  getToken: (service) => ipcRenderer.invoke('auth:get-token', service),
+  hasToken: (service) => ipcRenderer.invoke('auth:has-token', service),
+  removeToken: (service) => ipcRenderer.invoke('auth:remove-token', service),
+
+  // GitHub Integration
+  validateGitHubToken: (token) => ipcRenderer.invoke('github:validate', token),
+  getGitHubRepos: () => ipcRenderer.invoke('github:get-repos'),
+  getGitHubIssues: () => ipcRenderer.invoke('github:get-issues'),
+
+  // AI Key Test
+  testAiKey: (apiKey) => ipcRenderer.invoke('ai:test-key', apiKey),
 });
+

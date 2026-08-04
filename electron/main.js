@@ -2,10 +2,14 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const http = require('http');
 const LocalStore = require('./storage');
+const AuthVault = require('./authVault');
+const GitHubTools = require('./githubTools');
 const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
 const { openTerminal, openVSCode, openAndroidStudio, openAntigravityIDE, openInExplorer } = require('./systemOps');
 
 const store = new LocalStore();
+const authVault = new AuthVault();
+const githubTools = new GitHubTools(authVault);
 let mainWindow = null;
 
 function checkDevServer(url) {
@@ -125,3 +129,51 @@ ipcMain.handle('store:get-all', async () => {
 ipcMain.handle('store:set', async (event, { key, val }) => {
   return store.set(key, val);
 });
+
+// Auth & Vault IPC Handlers
+ipcMain.handle('auth:save-token', async (event, { service, token }) => {
+  return authVault.saveToken(service, token);
+});
+
+ipcMain.handle('auth:get-token', async (event, service) => {
+  return authVault.getToken(service);
+});
+
+ipcMain.handle('auth:has-token', async (event, service) => {
+  return authVault.hasToken(service);
+});
+
+ipcMain.handle('auth:remove-token', async (event, service) => {
+  return authVault.removeToken(service);
+});
+
+// GitHub Integration IPC Handlers
+ipcMain.handle('github:validate', async (event, token) => {
+  return await githubTools.validateToken(token);
+});
+
+ipcMain.handle('github:get-repos', async () => {
+  return await githubTools.getRepos();
+});
+
+ipcMain.handle('github:get-issues', async () => {
+  return await githubTools.getIssues();
+});
+
+// AI API Key Test IPC Handler
+ipcMain.handle('ai:test-key', async (event, apiKey) => {
+  const keyToTest = apiKey || authVault.getToken('gemini_api_key');
+  if (!keyToTest) return { success: false, error: 'Chiave API non fornita' };
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${keyToTest}`);
+    if (res.ok) {
+      return { success: true, message: 'Chiave Gemini API valida!' };
+    } else {
+      const err = await res.json();
+      return { success: false, error: err.error?.message || 'Chiave non valida' };
+    }
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
