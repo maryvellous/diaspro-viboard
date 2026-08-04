@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Exact Palette from palette dashboard.png & NexaVerse inspiration */
+  --sidebar-purple: #6B5887;
+  --bg-canvas: #1e1333;
+  --bg-canvas-card: #2b1c47;
+  
+  /* Palette Colors */
+  --palette-blue: #A5C4DC;
+  --palette-sage: #98A78A;
+  --palette-sand: #E8D19E;
+  --palette-lavender: #9D85C6;
+  --palette-plum: #7A3F67;
+
+  --font-heading: 'Outfit', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  --radius-bubbly: 28px;
+  --radius-pill: 9999px;
+}
+
+html, body {
+  background-color: var(--bg-canvas);
+  color: #ffffff;
+  font-family: var(--font-body);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(157, 133, 198, 0.4);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(157, 133, 198, 0.7);
+}
+
+/* EXPLICIT CANVAS OUTER PADDING */
+.projects-canvas-container {
+  padding: 48px !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+}
+
+/* EXPLICIT CARD SPACING RULES */
+.dashboard-card {
+  border-radius: 28px !important;
+  padding: 32px !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 24px 48px -10px rgba(0, 0, 0, 0.7) !important;
+}
+
+.card-title-block {
+  margin-bottom: 24px !important;
+}
+
+.card-path-subtitle {
+  margin-top: 8px !important;
+  font-size: 12px !important;
+  font-family: var(--font-code) !important;
+  line-height: 1.4 !important;
+}
+
+.card-badges-block {
+  margin-bottom: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.card-commit-block {
+  margin-bottom: 24px !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+}
+
+.card-bottom-actions {
+  margin-top: 24px !important;
+  padding-top: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* Badge & Pill Formulas */
+.badge-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 6px 14px !important;
+  min-height: 28px !important;
+  border-radius: 9999px !important;
+  font-family: var(--font-body) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.action-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 18px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  font-family: var(--font-heading) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2px !important;
+  line-height: 1 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.action-pill:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.task-sticker-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  min-height: 28px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #ec4899 0%, #d946ef 100%) !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Preset Palette Themes for Cards */
+.theme-blue {
+  background-color: var(--palette-blue) !important;
+  color: #0f273b !important;
+}
+
+.theme-sage {
+  background-color: var(--palette-sage) !important;
+  color: #15260f !important;
+}
+
+.theme-sand {
+  background-color: var(--palette-sand) !important;
+  color: #3b2c0f !important;
+}
+
+.theme-lavender {
+  background-color: var(--palette-lavender) !important;
+  color: #ffffff !important;
+}
+
+.theme-plum {
+  background-color: var(--palette-plum) !important;
+  color: #ffffff !important;
+}
+
+.theme-default {
+  background-color: var(--bg-canvas-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+/* Floating Post-it Overlay Sticker */
+.postit-floating-overlay {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 40 !important;
+  width: 260px !important;
+  background: linear-gradient(135deg, #fef08a 0%, #fef9c3 100%) !important;
+  color: #451a03 !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  transform: rotate(-1.5deg) !important;
+}
+
+.postit-floating-overlay::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -8px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 60px !important;
+  height: 18px !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 4px !important;
+}
+
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
