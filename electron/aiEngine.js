@@ -157,15 +157,15 @@ class AIEngine {
 
     try {
       if (provider === 'gemini') {
-        return await this.callGemini({ apiKey, modelTier: modelTier || 'gemini-1.5-flash', contextHeader, messages });
+        return await this.callGemini({ apiKey, modelTier: modelTier || 'gemini-3.6-flash', contextHeader, messages });
       } else if (provider === 'anthropic') {
-        return await this.callAnthropic({ apiKey, modelTier: modelTier || 'claude-3-5-sonnet-20241022', contextHeader, messages });
+        return await this.callAnthropic({ apiKey, modelTier: modelTier || 'claude-sonnet-5', contextHeader, messages });
       } else if (provider === 'openai' || provider === 'deepseek') {
         const baseUrl = provider === 'openai' ? 'https://api.openai.com/v1' : 'https://api.deepseek.com';
-        const defaultTier = provider === 'openai' ? 'gpt-4o-mini' : 'deepseek-chat';
+        const defaultTier = provider === 'openai' ? 'gpt-5.6-terra' : 'deepseek-v4-flash';
         return await this.callOpenAICompatible({ baseUrl, apiKey, modelTier: modelTier || defaultTier, contextHeader, messages });
       } else if (provider === 'ollama') {
-        return await this.callOllama({ modelTier: modelTier || 'llama3', contextHeader, messages });
+        return await this.callOllama({ modelTier: modelTier || 'llama3.3', contextHeader, messages });
       } else {
         return { success: false, error: `Provider non supportato: ${provider}` };
       }
