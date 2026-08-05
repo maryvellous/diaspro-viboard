@@ -9,8 +9,13 @@ class GoogleTools {
     return (
       this.authVault.getToken('google_client_id') ||
       process.env.GOOGLE_CLIENT_ID ||
-      '1084293847291-epicSnailDefaultClientId.apps.googleusercontent.com'
+      ''
     );
+  }
+
+  hasConfiguredClientId() {
+    const id = this.getClientId();
+    return !!id && !id.includes('DefaultClientId');
   }
 
   getClientSecret() {

@@ -46,21 +46,24 @@ class AuthVault {
         };
       }
     } catch (e) {
-      console.warn('safeStorage encryption failed, using AES fallback:', e);
+      console.warn('safeStorage encryption failed, using AES-GCM fallback:', e);
     }
 
-    // AES-256-CTR Fallback
+    // AES-256-GCM Fallback Encryption
     try {
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv('aes-256-ctr', this.getFallbackKey(), iv);
+      const iv = crypto.randomBytes(12);
+      const cipher = crypto.createCipheriv('aes-256-gcm', this.getFallbackKey(), iv);
       const encrypted = Buffer.concat([cipher.update(plainText, 'utf8'), cipher.final()]);
+      const authTag = cipher.getAuthTag();
+
       return {
-        method: 'fallbackAES',
+        method: 'fallbackAES-GCM',
         iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
         content: encrypted.toString('hex'),
       };
     } catch (e) {
-      console.error('AES encryption fallback failed:', e);
+      console.error('AES-GCM encryption fallback failed:', e);
       return null;
     }
   }
@@ -76,7 +79,22 @@ class AuthVault {
       console.warn('safeStorage decryption failed, checking fallback:', e);
     }
 
-    // AES-256-CTR Fallback decryption
+    // AES-256-GCM Fallback Decryption
+    if (entry.method === 'fallbackAES-GCM' && entry.authTag) {
+      try {
+        const iv = Buffer.from(entry.iv, 'hex');
+        const authTag = Buffer.from(entry.authTag, 'hex');
+        const decipher = crypto.createDecipheriv('aes-256-gcm', this.getFallbackKey(), iv);
+        decipher.setAuthTag(authTag);
+        const decrypted = Buffer.concat([decipher.update(Buffer.from(entry.content, 'hex')), decipher.final()]);
+        return decrypted.toString('utf8');
+      } catch (e) {
+        console.error('AES-GCM decryption failed:', e);
+        return null;
+      }
+    }
+
+    // Legacy AES-256-CTR Fallback decryption for backward compatibility
     if (entry.method === 'fallbackAES' || entry.iv) {
       try {
         const iv = Buffer.from(entry.iv, 'hex');
@@ -84,14 +102,16 @@ class AuthVault {
         const decrypted = Buffer.concat([decipher.update(Buffer.from(entry.content, 'hex')), decipher.final()]);
         return decrypted.toString('utf8');
       } catch (e) {
-        console.error('AES decryption failed:', e);
+        console.error('Legacy AES-CTR decryption failed:', e);
       }
     }
     return null;
   }
 
   saveToken(service, secretData) {
-    // secretData can be a string (e.g. PAT / API key) or an object (e.g. { access_token, refresh_token })
+    if (secretData === undefined || secretData === null) {
+      return this.removeToken(service);
+    }
     const strToEncrypt = typeof secretData === 'string' ? secretData : JSON.stringify(secretData);
     const encrypted = this.encryptValue(strToEncrypt);
     if (encrypted) {
@@ -110,11 +130,15 @@ class AuthVault {
     if (!entry) return null;
     const decryptedStr = this.decryptValue(entry);
     if (!decryptedStr) return null;
-    try {
-      return JSON.parse(decryptedStr);
-    } catch (e) {
-      return decryptedStr; // raw string
+    const trimmed = decryptedStr.trim();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      try {
+        return JSON.parse(trimmed);
+      } catch (e) {
+        return decryptedStr;
+      }
     }
+    return decryptedStr;
   }
 
   removeToken(service) {

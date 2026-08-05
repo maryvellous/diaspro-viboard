@@ -40,6 +40,7 @@ class SpotifyTools {
     }
 
     const { verifier, challenge } = SpotifyTools.generatePKCE();
+    const stateToken = crypto.randomBytes(16).toString('hex');
     const scopes = [
       'user-read-currently-playing',
       'user-read-playback-state',
@@ -48,30 +49,45 @@ class SpotifyTools {
     ];
 
     return new Promise((resolve) => {
+      let isResolved = false;
+
       const server = http.createServer(async (req, res) => {
         try {
           const reqUrl = new URL(req.url, `http://127.0.0.1`);
           const code = reqUrl.searchParams.get('code');
           const errorParam = reqUrl.searchParams.get('error');
+          const incomingState = reqUrl.searchParams.get('state');
 
           if (errorParam) {
+            clearTimeout(timeoutTimer);
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end('<h2>Autenticazione Spotify annullata. Puoi chiudere questa pagina.</h2>');
             server.close();
-            return resolve({ success: false, error: `Spotify OAuth error: ${errorParam}` });
+            if (!isResolved) { isResolved = true; resolve({ success: false, error: `Spotify OAuth error: ${errorParam}` }); }
+            return;
+          }
+
+          if (incomingState !== stateToken) {
+            clearTimeout(timeoutTimer);
+            res.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end('<h2>Errore di sicurezza: State CSRF non valido.</h2>');
+            server.close();
+            if (!isResolved) { isResolved = true; resolve({ success: false, error: 'Stato CSRF OAuth Spotify non valido o manomesso.' }); }
+            return;
           }
 
           if (code) {
+            clearTimeout(timeoutTimer);
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(`
               <!DOCTYPE html>
               <html>
               <head><title>epicSnail - Spotify Connesso</title></head>
-              <body style="font-family: sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
-                <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 20px; border: 1px solid #7A3F67;">
-                  <h1 style="color: #9D85C6; margin-bottom: 10px;">Spotify Connesso!</h1>
-                  <p>Account Spotify autorizzato con successo.</p>
-                  <p style="color: #aaaaaa; font-size: 13px;">Puoi chiudere questa pagina e tornare all'applicazione.</p>
+              <body style="font-family: system-ui, -apple-system, sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+                <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 20px; border: 1px solid #7A3F67; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                  <h1 style="color: #9D85C6; margin-bottom: 12px; font-size: 24px;">Spotify Connesso</h1>
+                  <p style="color: #E8D19E; font-size: 15px; margin-bottom: 16px;">Account Spotify autorizzato con successo.</p>
+                  <p style="color: #A5C4DC; font-size: 13px;">Puoi chiudere questa pagina e tornare all'applicazione.</p>
                 </div>
               </body>
               </html>
@@ -87,15 +103,26 @@ class SpotifyTools {
               redirectUri,
             });
 
-            return resolve(tokenResult);
+            if (!isResolved) { isResolved = true; resolve(tokenResult); }
+            return;
           }
         } catch (e) {
+          clearTimeout(timeoutTimer);
           res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end('Errore callback Spotify OAuth');
           server.close();
-          return resolve({ success: false, error: e.message });
+          if (!isResolved) { isResolved = true; resolve({ success: false, error: e.message }); }
+          return;
         }
       });
+
+      const timeoutTimer = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          server.close();
+          resolve({ success: false, error: 'Timeout autenticazione Spotify: operazione scaduta (3 minuti).' });
+        }
+      }, 180000);
 
       server.listen(0, '127.0.0.1', () => {
         const port = server.address().port;
@@ -107,13 +134,15 @@ class SpotifyTools {
           `&scope=${encodeURIComponent(scopes.join(' '))}` +
           `&redirect_uri=${encodeURIComponent(redirectUri)}` +
           `&code_challenge=${encodeURIComponent(challenge)}` +
-          `&code_challenge_method=S256`;
+          `&code_challenge_method=S256` +
+          `&state=${encodeURIComponent(stateToken)}`;
 
         shell.openExternal(authUrl);
       });
 
       server.on('error', (err) => {
-        resolve({ success: false, error: `Errore avvio server OAuth locale: ${err.message}` });
+        clearTimeout(timeoutTimer);
+        if (!isResolved) { isResolved = true; resolve({ success: false, error: `Errore avvio server OAuth locale: ${err.message}` }); }
       });
     });
   }

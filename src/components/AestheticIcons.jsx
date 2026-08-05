@@ -16,6 +16,8 @@ import sunSvg from '../assets/icons/sun-svgrepo-com.svg';
 import fileSvg from '../assets/icons/file-2-svgrepo-com.svg';
 import cloudSvg from '../assets/icons/cloud-svgrepo-com.svg';
 import starSvg from '../assets/icons/star-svgrepo-com.svg';
+import lightBulbSvg from '../assets/icons/light-bulb-svgrepo-com.svg';
+import wrenchSvg from '../assets/icons/wrench-svgrepo-com.svg';
 
 export function AestheticCogIcon({ className = "w-6 h-6" }) {
   return <img src={cogSvg} alt="Settings" className={`${className} object-contain`} />;
@@ -75,4 +77,12 @@ export function AestheticCloudIcon({ className = "w-6 h-6" }) {
 
 export function AestheticStarIcon({ className = "w-6 h-6" }) {
   return <img src={starSvg} alt="Star" className={`${className} object-contain`} />;
+}
+
+export function AestheticLightBulbIcon({ className = "w-6 h-6" }) {
+  return <img src={lightBulbSvg} alt="CodeQuest" className={`${className} object-contain`} />;
+}
+
+export function AestheticWrenchIcon({ className = "w-6 h-6" }) {
+  return <img src={wrenchSvg} alt="Strumenti" className={`${className} object-contain`} />;
 }

@@ -96,6 +96,15 @@ export default function SpotifyWidget() {
   };
 
   const isPlaying = playback?.isPlaying;
+
+  const handlePlayPause = async () => {
+    if (isPlaying) {
+      await handlePause();
+    } else {
+      await handlePlay();
+    }
+  };
+
   const isConnected = statusInfo.status === 'connected';
 
   return (

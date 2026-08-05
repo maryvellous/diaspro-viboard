@@ -147,9 +147,10 @@ export default function GoogleCalendarWidget() {
       const isoDate = d.toISOString().split('T')[0];
       
       // Filter events matching this date
-      const dayEvents = events.filter(ev => {
-        if (!ev.start) return false;
-        return ev.start.startsWith(isoDate) || (i === 0 && !ev.start.includes('-'));
+      const dayEvents = (events || []).filter(ev => {
+        if (!ev || ev.start === undefined || ev.start === null) return false;
+        const startStr = String(ev.start);
+        return startStr.startsWith(isoDate) || (i === 0 && !startStr.includes('-'));
       });
 
       days.push({

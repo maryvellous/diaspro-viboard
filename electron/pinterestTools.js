@@ -50,32 +50,49 @@ class PinterestTools {
     }
 
     const { verifier, challenge } = PinterestTools.generatePKCE();
+    const stateToken = crypto.randomBytes(16).toString('hex');
     const scopes = ['boards:read', 'pins:read', 'user_accounts:read'];
 
     return new Promise((resolve) => {
+      let isResolved = false;
+
       const server = http.createServer(async (req, res) => {
         try {
           const reqUrl = new URL(req.url, `http://127.0.0.1`);
           const code = reqUrl.searchParams.get('code');
           const errorParam = reqUrl.searchParams.get('error');
+          const incomingState = reqUrl.searchParams.get('state');
 
           if (errorParam) {
+            clearTimeout(timeoutTimer);
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end('<h2>Autenticazione Pinterest annullata. Puoi chiudere questa pagina.</h2>');
             server.close();
-            return resolve({ success: false, error: `Pinterest OAuth error: ${errorParam}` });
+            if (!isResolved) { isResolved = true; resolve({ success: false, error: `Pinterest OAuth error: ${errorParam}` }); }
+            return;
+          }
+
+          if (incomingState !== stateToken) {
+            clearTimeout(timeoutTimer);
+            res.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end('<h2>Errore di sicurezza: State CSRF non valido.</h2>');
+            server.close();
+            if (!isResolved) { isResolved = true; resolve({ success: false, error: 'Stato CSRF OAuth Pinterest non valido o manomesso.' }); }
+            return;
           }
 
           if (code) {
+            clearTimeout(timeoutTimer);
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(`
               <!DOCTYPE html>
               <html>
               <head><title>epicSnail - Pinterest Connesso</title></head>
-              <body style="font-family: sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
-                <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 24px; border: 1px solid #BC957D;">
-                  <h1 style="color: #E8D19E;">📌 Pinterest collegato!</h1>
-                  <p style="color: #A5C4DC;">Puoi chiudere questa finestra e tornare ad epicSnail.</p>
+              <body style="font-family: system-ui, -apple-system, sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+                <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 24px; border: 1px solid #BC957D; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                  <h1 style="color: #E8D19E; font-size: 24px; margin-bottom: 12px;">Pinterest Collegato</h1>
+                  <p style="color: #A5C4DC; font-size: 15px; margin-bottom: 16px;">Account Pinterest autorizzato con successo.</p>
+                  <p style="color: #ffffff; opacity: 0.6; font-size: 13px;">Puoi chiudere questa finestra e tornare ad epicSnail.</p>
                 </div>
               </body>
               </html>
@@ -83,24 +100,39 @@ class PinterestTools {
             server.close();
 
             const port = server.address().port;
-            const redirectUri = `http://localhost:${port}`;
+            const redirectUri = `http://127.0.0.1:${port}`;
             const tokenRes = await this.exchangeCodeForToken(code, verifier, redirectUri);
-            return resolve(tokenRes);
+            if (!isResolved) { isResolved = true; resolve(tokenRes); }
+            return;
           }
         } catch (err) {
+          clearTimeout(timeoutTimer);
           server.close();
-          return resolve({ success: false, error: err.message });
+          if (!isResolved) { isResolved = true; resolve({ success: false, error: err.message }); }
+          return;
         }
       });
 
+      const timeoutTimer = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          server.close();
+          resolve({ success: false, error: 'Timeout autenticazione Pinterest: operazione scaduta (3 minuti).' });
+        }
+      }, 180000);
+
       server.listen(0, '127.0.0.1', () => {
         const port = server.address().port;
-        const redirectUri = `http://localhost:${port}`;
-        const state = crypto.randomBytes(16).toString('hex');
+        const redirectUri = `http://127.0.0.1:${port}`;
 
-        const authUrl = `https://www.pinterest.com/oauth/?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes.join(','))}&state=${state}&code_challenge=${challenge}&code_challenge_method=S256`;
+        const authUrl = `https://www.pinterest.com/oauth/?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes.join(','))}&state=${encodeURIComponent(stateToken)}&code_challenge=${challenge}&code_challenge_method=S256`;
 
         shell.openExternal(authUrl);
+      });
+
+      server.on('error', (err) => {
+        clearTimeout(timeoutTimer);
+        if (!isResolved) { isResolved = true; resolve({ success: false, error: `Errore avvio server OAuth locale: ${err.message}` }); }
       });
     });
   }

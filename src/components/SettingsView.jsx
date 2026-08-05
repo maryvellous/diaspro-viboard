@@ -833,7 +833,7 @@ export default function SettingsView() {
                   <span className="truncate mr-2">{p}</span>
                   <button
                     onClick={() => handleRemovePath(idx)}
-                    className="p-1.5 rounded-xl text-gray-400 hover:text-rose-400 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-xl text-white/50 hover:text-[#8F5A5A] transition-colors cursor-pointer"
                     title="Rimuovi percorso"
                   >
                     <Trash2 className="w-4 h-4" />

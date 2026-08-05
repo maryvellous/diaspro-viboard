@@ -1,43 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AestheticCommentsIcon } from './AestheticIcons';
 import { 
-  Bot, Send, Sparkles, Sliders, CheckCircle, XCircle, 
+  Send, Sparkles, Sliders, CheckCircle, XCircle, 
   Trash2, Calendar, FolderGit2, Music, ChevronDown,
   CornerDownLeft, ShieldCheck, History, Plus, Archive, Folder, MessageSquare
 } from 'lucide-react';
 import { useGamification } from '../context/GamificationContext';
 import { useProjects } from '../context/ProjectsContext';
-
-const PROVIDER_TIERS = {
-  gemini: [
-    { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash (Fast & Code)' },
-    { id: 'gemini-3.1-pro', name: 'Gemini 3.1 Pro (Deep Reasoning)' },
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-  ],
-  deepseek: [
-    { id: 'deepseek-v4-flash', name: 'DeepSeek V4-Flash' },
-    { id: 'deepseek-v4-pro', name: 'DeepSeek V4 Pro' },
-    { id: 'deepseek-chat', name: 'DeepSeek Chat' },
-  ],
-  anthropic: [
-    { id: 'claude-sonnet-5', name: 'Claude Sonnet 5 (Agentic & Code)' },
-    { id: 'claude-opus-5', name: 'Claude Opus 5 (Flagship)' },
-    { id: 'claude-fable-5', name: 'Claude Fable 5 (Engineering)' },
-    { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' },
-  ],
-  openai: [
-    { id: 'gpt-5.6-sol', name: 'GPT-5.6 Sol (Flagship Reasoning)' },
-    { id: 'gpt-5.6-terra', name: 'GPT-5.6 Terra (Balanced)' },
-    { id: 'gpt-5.6-luna', name: 'GPT-5.6 Luna (Fast & Efficient)' },
-    { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-  ],
-  ollama: [
-    { id: 'llama3.3', name: 'Ollama Llama 3.3' },
-    { id: 'qwen2.5-coder', name: 'Ollama Qwen 2.5 Coder' },
-    { id: 'mistral-large', name: 'Ollama Mistral Large' },
-    { id: 'llama3', name: 'Ollama Llama 3' },
-  ]
-};
+import { PROVIDER_TIERS } from '../constants/providers';
 
 const getTimeBasedGreeting = (name) => {
   const hour = new Date().getHours();
@@ -125,7 +95,7 @@ export default function ChatPanel() {
         if (header) {
           setContextHeader(header);
           // Try matching header to project
-          const matched = projects.find(p => header.includes(p.name));
+          const matched = (projects || []).find(p => p && p.name && header.includes(p.name));
           if (matched) setActiveContextProjectId(matched.id);
         }
       });
@@ -494,7 +464,7 @@ export default function ChatPanel() {
                 className="appearance-none bg-[#7A3F67] text-[#E8D19E] border border-[#E8D19E]/50 hover:border-[#E8D19E] rounded-2xl px-3.5 py-1.5 pr-8 text-xs font-black focus:outline-none focus:ring-2 focus:ring-[#E8D19E] cursor-pointer shadow-md"
               >
                 <option value="none" className="bg-[#2b1c47] text-white/70">Nessun Contesto</option>
-                {projects.map((p) => (
+                {(projects || []).map((p) => (
                   <option key={p.id} value={p.id} className="bg-[#2b1c47] text-white font-normal">
                     Contesto: {p.name}
                   </option>
@@ -618,8 +588,8 @@ export default function ChatPanel() {
                         )}
 
                         {msg.pendingAction.status === 'cancelled' && (
-                          <div className="text-xs text-gray-400 font-medium flex items-center gap-1.5 py-1">
-                            <XCircle className="w-4 h-4 text-gray-500" />
+                          <div className="text-xs text-[#A5C4DC] font-medium flex items-center gap-1.5 py-1">
+                            <XCircle className="w-4 h-4 text-white/40" />
                             Azione annullata dall'utente.
                           </div>
                         )}
@@ -707,7 +677,7 @@ export default function ChatPanel() {
                 className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer shadow-md shrink-0 ${
                   inputText.trim() && !isLoading
                     ? 'bg-[#6B5887] hover:bg-[#7A3F67] text-white hover:scale-105 active:scale-95 border border-white/20'
-                    : 'bg-white/10 text-gray-500 cursor-not-allowed'
+                    : 'bg-white/10 text-white/30 cursor-not-allowed'
                 }`}
               >
                 <Send className="w-5 h-5" />
@@ -728,7 +698,7 @@ export default function ChatPanel() {
               </div>
               <button
                 onClick={() => setIsContextModalOpen(false)}
-                className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                className="text-white/50 hover:text-white text-sm cursor-pointer"
               >
                 ✕
               </button>
@@ -756,7 +726,7 @@ export default function ChatPanel() {
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setIsContextModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-300 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white/80 cursor-pointer"
               >
                 Chiudi
               </button>

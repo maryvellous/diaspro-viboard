@@ -20,6 +20,7 @@ import SpotifyWidget from './components/SpotifyWidget';
 import PinterestView from './components/PinterestView';
 import ChatPanel from './components/ChatPanel';
 import LevelUpModal from './components/LevelUpModal';
+import CodeQuestView from './components/CodeQuestView';
 
 function MainContent({ currentTab, setCurrentTab, onOpenSearch }) {
   const { enabledSections } = useSections();
@@ -36,14 +37,15 @@ function MainContent({ currentTab, setCurrentTab, onOpenSearch }) {
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-gradient-to-b from-[#432A69] via-[#2f1d4b] to-[#1c0f32]">
       <Header onOpenSearch={onOpenSearch} />
       <div className="flex-1 flex overflow-hidden">
-        {currentTab === 'today' && <TodayView />}
-        {currentTab === 'projects' && <ProjectsView onNavigateTab={setCurrentTab} />}
-        {currentTab === 'calendar' && <GoogleCalendarWidget />}
-        {currentTab === 'spotify' && enabledSections.spotify && <SpotifyWidget />}
+        {currentTab === 'today'     && <TodayView />}
+        {currentTab === 'projects'  && <ProjectsView onNavigateTab={setCurrentTab} />}
+        {currentTab === 'calendar'  && <GoogleCalendarWidget />}
+        {currentTab === 'spotify'   && enabledSections.spotify   && <SpotifyWidget />}
         {currentTab === 'pinterest' && enabledSections.pinterest && (
           <PinterestView onNavigateTab={setCurrentTab} />
         )}
-        {currentTab === 'settings' && <SettingsView />}
+        {currentTab === 'codequest' && <CodeQuestView />}
+        {currentTab === 'settings'  && <SettingsView />}
       </div>
     </div>
   );
@@ -60,8 +62,9 @@ function AppInner() {
     'today',
     'projects',
     'calendar',
-    ...(enabledSections.spotify ? ['spotify'] : []),
+    ...(enabledSections.spotify   ? ['spotify']   : []),
     ...(enabledSections.pinterest ? ['pinterest'] : []),
+    'codequest',
     'chat',
     'settings',
   ];

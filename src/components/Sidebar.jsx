@@ -7,7 +7,8 @@ import {
   AestheticEqualiserIcon, 
   AestheticHeartIcon, 
   AestheticCommentsIcon, 
-  AestheticCogIcon 
+  AestheticCogIcon,
+  AestheticLightBulbIcon,
 } from './AestheticIcons';
 
 // Lava lamp bubble configuration
@@ -36,10 +37,11 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
     { id: 'today',    icon: AestheticSunIcon,       label: 'Oggi' },
     { id: 'projects', icon: AestheticBriefcaseIcon, label: 'Progetti' },
     { id: 'calendar', icon: AestheticCalendarIcon,  label: 'Calendario' },
-    ...(enabledSections.spotify   ? [{ id: 'spotify',   icon: AestheticEqualiserIcon, label: 'Spotify' }]   : []),
-    ...(enabledSections.pinterest ? [{ id: 'pinterest', icon: AestheticHeartIcon,     label: 'Moodboard' }] : []),
-    { id: 'chat',     icon: AestheticCommentsIcon, label: 'SnailBot' },
-    { id: 'settings', icon: AestheticCogIcon,       label: 'Impostazioni' },
+    ...(enabledSections.spotify   ? [{ id: 'spotify',    icon: AestheticEqualiserIcon,  label: 'Spotify' }]    : []),
+    ...(enabledSections.pinterest ? [{ id: 'pinterest',  icon: AestheticHeartIcon,      label: 'Moodboard' }]  : []),
+    { id: 'codequest', icon: AestheticLightBulbIcon, label: 'CodeQuest' },
+    { id: 'chat',      icon: AestheticCommentsIcon,  label: 'SnailBot' },
+    { id: 'settings',  icon: AestheticCogIcon,       label: 'Impostazioni' },
   ];
 
   return (

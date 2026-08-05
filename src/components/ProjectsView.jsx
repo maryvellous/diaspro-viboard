@@ -362,32 +362,30 @@ export default function ProjectsView({ onNavigateTab }) {
                 {/* 2. Badges Block (Explicit Card Section 2) */}
                 <div className="card-badges-block flex-wrap">
                   {project.isLocal !== false && (
-                    <span className="badge-pill bg-purple-900/60 text-purple-200 border border-purple-400/40">
-                      💻 Locale
+                    <span className="badge-pill bg-[#6B5887]/60 text-[#9D85C6] border border-[#9D85C6]/40">
+                      Locale
                     </span>
                   )}
 
                   {project.isGitHubRemote && (
-                    <span className="badge-pill bg-slate-800 text-[#E8D19E] border border-[#E8D19E]/40">
-                      🐙 GitHub
+                    <span className="badge-pill bg-[#1e1333] text-[#E8D19E] border border-[#E8D19E]/40">
+                      GitHub
                     </span>
                   )}
 
-                  <span className={`badge-pill ${
-                    isDarkTheme ? 'bg-white/15 text-white border border-white/20' : 'bg-black/15 text-black border border-black/15'
-                  }`}>
+                  <span className="badge-pill bg-white/15 text-white border border-white/20">
                     <GitBranch className="w-3.5 h-3.5 shrink-0" />
                     <span>{project.branch}</span>
                   </span>
 
                   {project.isLocal !== false && (
                     project.clean ? (
-                      <span className="badge-pill text-emerald-950 bg-emerald-400/90 border border-emerald-500/40">
+                      <span className="badge-pill text-[#1e1333] bg-[#98A78A] border border-[#98A78A]/40 font-bold">
                         <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                         <span>Clean</span>
                       </span>
                     ) : (
-                      <span className="badge-pill text-amber-950 bg-amber-300/90 border border-amber-500/40">
+                      <span className="badge-pill text-[#1e1333] bg-[#E8D19E] border border-[#E8D19E]/40 font-bold">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>{project.modified} modificati</span>
                       </span>
@@ -395,15 +393,15 @@ export default function ProjectsView({ onNavigateTab }) {
                   )}
 
                   {project.stargazers_count !== undefined && (
-                    <span className="badge-pill text-amber-200 bg-amber-900/50 border border-amber-400/30" title="Stelle GitHub">
-                      <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300 shrink-0" />
+                    <span className="badge-pill text-[#E8D19E] bg-[#1e1333]/70 border border-[#E8D19E]/40" title="Stelle GitHub">
+                      <Star className="w-3.5 h-3.5 fill-[#E8D19E] text-[#E8D19E] shrink-0" />
                       <span>{project.stargazers_count}</span>
                     </span>
                   )}
 
                   {project.open_issues_count !== undefined && project.open_issues_count > 0 && (
-                    <span className="badge-pill text-rose-200 bg-rose-950/60 border border-rose-500/40" title="Issue aperte su GitHub">
-                      <span>🟢 {project.open_issues_count} issue</span>
+                    <span className="badge-pill text-[#8F5A5A] bg-[#1e1333]/70 border border-[#8F5A5A]/40" title="Issue aperte su GitHub">
+                      <span>Issue: {project.open_issues_count}</span>
                     </span>
                   )}
 
@@ -421,12 +419,8 @@ export default function ProjectsView({ onNavigateTab }) {
 
                 {/* 3. Commit Block (Explicit Card Section 3) */}
                 {project.lastCommit && (
-                  <div className={`card-commit-block ${
-                    isDarkTheme ? 'bg-black/40 border border-white/10 text-white' : 'bg-black/10 border border-black/10 text-[#1e1333]'
-                  }`}>
-                    <div className={`flex items-center gap-2 text-xs font-mono font-bold mb-2 ${
-                      isDarkTheme ? 'text-purple-300' : 'text-purple-900'
-                    }`}>
+                  <div className="card-commit-block bg-[#1e1333]/60 border border-white/10 text-white">
+                    <div className="flex items-center gap-2 text-xs font-mono font-bold mb-2 text-[#9D85C6]">
                       <GitCommit className="w-3.5 h-3.5" />
                       <span>{project.lastCommit.hash}</span>
                     </div>
