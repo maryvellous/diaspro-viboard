@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="900" height="220">
+  <defs>
+
+    <!-- Background gradient: canvas → card → sidebar purple -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#1e1333"/>
+      <stop offset="55%"  stop-color="#2b1c47"/>
+      <stop offset="100%" stop-color="#6B5887"/>
+    </linearGradient>
+
+    <!-- Text gradient: sand → lavender → blue -->
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#E8D19E"/>
+      <stop offset="50%"  stop-color="#9D85C6"/>
+      <stop offset="100%" stop-color="#A5C4DC"/>
+    </linearGradient>
+
+    <!-- Clip to rounded rect so bubbles don't bleed out -->
+    <clipPath id="clip">
+      <rect width="900" height="220" rx="18"/>
+    </clipPath>
+
+    <!-- Soft blob blur -->
+    <filter id="bblur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+
+    <!-- Subtle text glow -->
+    <filter id="textglow" x="-10%" y="-30%" width="120%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <style>
+      /* Exact replication of sidebar @keyframes lavalamp */
+      @keyframes lavalamp {
+        0%   { transform: translateY(0px)    scale(1);    opacity: 0; }
+        8%   {                                            opacity: 1; }
+        30%  { transform: translateY(-58px)  scale(1.15); }
+        55%  { transform: translateY(-120px) scale(0.9);  }
+        75%  { transform: translateY(-175px) scale(1.2);  }
+        88%  {                                            opacity: 0.6; }
+        100% { transform: translateY(-270px) scale(0.8);  opacity: 0; }
+      }
+
+      .bubble { animation: lavalamp linear infinite; }
+
+      /* Matching the Sidebar.jsx BUBBLES config exactly, negative delays = already in motion */
+      .b1 { animation-duration: 12s; animation-delay:   0s;  } /* size=90,  left=12% */
+      .b2 { animation-duration: 15s; animation-delay:  -3.5s; } /* size=60,  left=55% */
+      .b3 { animation-duration: 18s; animation-delay:  -7s;  } /* size=110, left=30% */
+      .b4 { animation-duration: 11s; animation-delay:  -1.5s; } /* size=50,  left=70% */
+      .b5 { animation-duration: 14s; animation-delay:  -9s;  } /* size=75,  left=45% */
+      .b6 { animation-duration: 16s; animation-delay:  -5s;  } /* size=45,  left=20% */
+      /* Extra right-side bubbles for full-width coverage */
+      .b7 { animation-duration: 13s; animation-delay:  -2s;  }
+      .b8 { animation-duration: 17s; animation-delay:  -6s;  }
+    </style>
+  </defs>
+
+  <!-- Base background -->
+  <rect width="900" height="220" fill="url(#bgGrad)" rx="18"/>
+
+  <!-- ── Lava Lamp Bubble Layer ── -->
+  <g clip-path="url(#clip)" filter="url(#bblur)">
+
+    <!-- Plum   — size=90,  left=12% → cx=108 -->
+    <ellipse class="bubble b1" cx="108"  cy="268" rx="45" ry="42"
+             fill="rgba(122,63,103,0.55)"/>
+
+    <!-- Lavender — size=60, left=55% → cx=495 -->
+    <ellipse class="bubble b2" cx="495"  cy="250" rx="30" ry="27"
+             fill="rgba(157,133,198,0.45)"/>
+
+    <!-- Sidebar Purple — size=110, left=30% → cx=270 -->
+    <ellipse class="bubble b3" cx="270"  cy="275" rx="55" ry="50"
+             fill="rgba(107,88,135,0.50)"/>
+
+    <!-- Blue Accent — size=50, left=70% → cx=630 -->
+    <ellipse class="bubble b4" cx="630"  cy="245" rx="25" ry="22"
+             fill="rgba(165,196,220,0.35)"/>
+
+    <!-- Sage — size=75, left=45% → cx=405 -->
+    <ellipse class="bubble b5" cx="405"  cy="257" rx="37" ry="34"
+             fill="rgba(152,167,138,0.40)"/>
+
+    <!-- Terracotta — size=45, left=20% → cx=180 -->
+    <ellipse class="bubble b6" cx="180"  cy="240" rx="22" ry="20"
+             fill="rgba(143,90,90,0.40)"/>
+
+    <!-- Extra: right zone — Plum mid -->
+    <ellipse class="bubble b7" cx="760"  cy="262" rx="38" ry="35"
+             fill="rgba(122,63,103,0.38)"/>
+
+    <!-- Extra: far right — Lavender small -->
+    <ellipse class="bubble b8" cx="845"  cy="252" rx="28" ry="26"
+             fill="rgba(157,133,198,0.32)"/>
+  </g>
+
+  <!-- Top-edge shimmer line -->
+  <rect x="0" y="0" width="900" height="1" rx="1" fill="rgba(255,255,255,0.12)"/>
+
+  <!-- Bottom accent line — lavender -->
+  <rect x="0" y="218" width="900" height="2" rx="1" fill="rgba(157,133,198,0.45)"/>
+
+  <!-- ── Text Content ── -->
+
+  <!-- Main title -->
+  <text
+    x="450" y="98"
+    text-anchor="middle"
+    font-family="system-ui,-apple-system,'Segoe UI',sans-serif"
+    font-size="58"
+    font-weight="900"
+    letter-spacing="-1.5"
+    fill="url(#textGrad)"
+    filter="url(#textglow)">epicSnail</text>
+
+  <!-- Subtitle -->
+  <text
+    x="450" y="130"
+    text-anchor="middle"
+    font-family="system-ui,-apple-system,'Segoe UI',sans-serif"
+    font-size="13"
+    font-weight="500"
+    letter-spacing="4"
+    fill="rgba(232,209,158,0.65)">GAMIFIED DESKTOP DASHBOARD</text>
+
+  <!-- Tech pills row -->
+  <!-- Electron -->
+  <rect x="222" y="153" width="82"  height="23" rx="11.5"
+        fill="rgba(71,132,143,0.22)"  stroke="rgba(71,132,143,0.55)"  stroke-width="1"/>
+  <text x="263" y="168.5" text-anchor="middle"
+        font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="700"
+        fill="#47848F">Electron</text>
+
+  <!-- React -->
+  <rect x="314" y="153" width="66"  height="23" rx="11.5"
+        fill="rgba(97,218,251,0.15)"  stroke="rgba(97,218,251,0.45)"  stroke-width="1"/>
+  <text x="347" y="168.5" text-anchor="middle"
+        font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="700"
+        fill="#61DAFB">React</text>
+
+  <!-- Vite -->
+  <rect x="390" y="153" width="56"  height="23" rx="11.5"
+        fill="rgba(100,108,255,0.18)" stroke="rgba(100,108,255,0.50)" stroke-width="1"/>
+  <text x="418" y="168.5" text-anchor="middle"
+        font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="700"
+        fill="#9B9FFF">Vite</text>
+
+  <!-- Tailwind -->
+  <rect x="456" y="153" width="76"  height="23" rx="11.5"
+        fill="rgba(56,178,172,0.15)"  stroke="rgba(56,178,172,0.45)"  stroke-width="1"/>
+  <text x="494" y="168.5" text-anchor="middle"
+        font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="700"
+        fill="#38B2AC">Tailwind</text>
+
+  <!-- MIT -->
+  <rect x="542" y="153" width="50"  height="23" rx="11.5"
+        fill="rgba(152,167,138,0.20)" stroke="rgba(152,167,138,0.50)" stroke-width="1"/>
+  <text x="567" y="168.5" text-anchor="middle"
+        font-family="system-ui,-apple-system,sans-serif" font-size="10.5" font-weight="700"
+        fill="#98A78A">MIT</text>
+
+  <!-- Tagline bottom -->
+  <text
+    x="450" y="198"
+    text-anchor="middle"
+    font-family="'Courier New',Courier,monospace"
+    font-size="10"
+    font-weight="400"
+    letter-spacing="1.5"
+    fill="rgba(157,133,198,0.45)">v0.1 · Electron + React + Vite</text>
+
+</svg>

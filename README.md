@@ -1,4 +1,6 @@
-# 🐌 EpicSnail - Gamified Desktop Dashboard
+<p align="center">
+  <img src="public/banner.svg" alt="epicSnail — Gamified Desktop Dashboard" width="900"/>
+</p>
 
 ![Electron](https://img.shields.io/badge/Electron-34.3-47848F?style=for-the-badge&logo=electron&logoColor=white)
 ![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
