@@ -27,7 +27,7 @@
 
     <!-- Subtle text glow -->
     <filter id="textglow" x="-10%" y="-30%" width="120%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
