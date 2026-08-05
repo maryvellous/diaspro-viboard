@@ -17,7 +17,7 @@
 
     <!-- Clip to rounded rect so bubbles don't bleed out -->
     <clipPath id="clip">
-      <rect width="900" height="220" rx="18"/>
+      <rect width="500" height="500" rx="18"/>
     </clipPath>
 
     <!-- Soft blob blur -->
@@ -62,7 +62,7 @@
   </defs>
 
   <!-- Base background -->
-  <rect width="900" height="220" fill="url(#bgGrad)" rx="18"/>
+  <rect width="500" height="500" fill="url(#bgGrad)" rx="18"/>
 
   <!-- ── Lava Lamp Bubble Layer ── -->
   <g clip-path="url(#clip)" filter="url(#bblur)">
