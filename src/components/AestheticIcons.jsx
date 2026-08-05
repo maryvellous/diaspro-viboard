@@ -18,6 +18,11 @@ import cloudSvg from '../assets/icons/cloud-svgrepo-com.svg';
 import starSvg from '../assets/icons/star-svgrepo-com.svg';
 import lightBulbSvg from '../assets/icons/light-bulb-svgrepo-com.svg';
 import wrenchSvg from '../assets/icons/wrench-svgrepo-com.svg';
+import headphonesSvg from '../assets/icons/headphones-svgrepo-com.svg';
+
+export function AestheticHeadphonesIcon({ className = "w-6 h-6" }) {
+  return <img src={headphonesSvg} alt="Spotify" className={`${className} object-contain`} />;
+}
 
 export function AestheticCogIcon({ className = "w-6 h-6" }) {
   return <img src={cogSvg} alt="Settings" className={`${className} object-contain`} />;

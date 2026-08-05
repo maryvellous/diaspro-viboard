@@ -7,14 +7,17 @@ app.whenReady().then(async () => {
     width: 512,
     height: 512,
     show: false,
+    transparent: true,
+    frame: false,
+    backgroundColor: '#00000000',
     webPreferences: {
       offscreen: true
     }
   });
 
-  const svgPath = path.join(__dirname, '../src/icona statica.svg');
+  const svgPath = path.join(__dirname, '../src/assets/icona-V-trasparente.svg');
   const svgData = fs.readFileSync(svgPath, 'utf8');
-  const html = `<!DOCTYPE html><html><body style="margin:0;padding:0;overflow:hidden;background:transparent">${svgData}</body></html>`;
+  const html = `<!DOCTYPE html><html><head><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent !important;}</style></head><body>${svgData}</body></html>`;
 
   await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
   
