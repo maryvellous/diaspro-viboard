@@ -84,7 +84,7 @@ export default function PinterestView({ onNavigateTab }) {
             Moodboard Pinterest
           </h1>
           <p className="text-xs text-[#A5C4DC] mt-1 font-sans">
-            Bacheca visiva d'ispirazione per le tue idee e progetti epicSnail
+            Bacheca visiva d'ispirazione per le tue idee e progetti Diaspro Viboard
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export default function PinterestView({ onNavigateTab }) {
             <div>
               <h2 className="font-heading font-bold text-xl text-white">Connetti il tuo Pinterest</h2>
               <p className="text-xs text-[#A5C4DC] font-sans leading-relaxed mt-2">
-                Sincronizza le tue bacheche visive d'ispirazione direttamente in epicSnail in 1-Click via browser.
+                Sincronizza le tue bacheche visive d'ispirazione direttamente in Diaspro Viboard in 1-Click via browser.
               </p>
             </div>
 

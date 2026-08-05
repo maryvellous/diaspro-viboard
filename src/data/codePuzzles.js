@@ -185,7 +185,7 @@ const py_fill_1 = () => {
   const token = 'print';
   const options = shuffle(['print', 'stampa', 'echo', 'console.log']);
   const codeLines = [
-    'messaggio = "Benvenuto su epicSnail!"',
+    'messaggio = "Benvenuto su Diaspro Viboard!"',
     '???(messaggio)',
   ];
   return {
@@ -340,8 +340,8 @@ const py_bug_2 = () => {
 
 const js_bug_1 = () => {
   const lines = [
-    { id: '1', code: 'const nome = "Snail";', isBug: false },
-    { id: '2', code: 'nome = "Turbo Snail";', isBug: true, errorReason: 'Errore: Impossibile riassegnare una variabile dichiarata con const!' },
+    { id: '1', code: 'const nome = "Diaspro";', isBug: false },
+    { id: '2', code: 'nome = "Diaspro Viboard";', isBug: true, errorReason: 'Errore: Impossibile riassegnare una variabile dichiarata con const!' },
     { id: '3', code: 'console.log(nome);', isBug: false },
   ];
   return {

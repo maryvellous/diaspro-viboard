@@ -133,7 +133,7 @@ export default function OnboardingWizard() {
         {/* Header Wizard */}
         <div className="p-7 bg-[#1e1333] border-b border-white/10 flex items-center justify-between">
           <div>
-            <h2 className="font-heading font-black text-2xl text-white">Setup epicSnail Hub</h2>
+            <h2 className="font-heading font-black text-2xl text-white">Setup Diaspro Viboard Hub</h2>
             <p className="text-xs text-[#9D85C6] font-mono mt-1">Passo {step} di 3</p>
           </div>
 
@@ -165,7 +165,7 @@ export default function OnboardingWizard() {
                     Account Google Master Obbligatorio
                   </h3>
                   <p className="text-xs text-white/80 leading-relaxed font-body mt-1">
-                    epicSnail e un Hub di Produttivita guidato da Google Workspace e SnailBot IA. Connetti il tuo account per abilitare Calendario, Tasks, Drive e dare contesto al Chatbot.
+                    Diaspro Viboard e un Hub di Produttivita guidato da Google Workspace e Diaspro AI. Connetti il tuo account per abilitare Calendario, Tasks, Drive e dare contesto al Chatbot.
                   </p>
                 </div>
               </div>
@@ -181,48 +181,35 @@ export default function OnboardingWizard() {
                       </div>
                     )}
                     <div>
-                      <p className="font-bold text-sm text-white">{googleStatus.userName || 'Account Google Connetto'}</p>
-                      <p className="text-xs font-mono text-[#98A78A]">{googleStatus.userEmail}</p>
+                      <p className="text-sm font-semibold text-white">
+                        {googleStatus.userName || 'Account Google Connesso'}
+                      </p>
+                      <p className="text-xs text-[#98A78A]">Google Workspace Master Attivo</p>
                     </div>
                   </div>
-                  <CheckCircle2 className="w-6 h-6 text-[#98A78A]" />
+                  <span className="text-xs font-mono font-bold text-[#98A78A] bg-[#98A78A]/20 px-3 py-1 rounded-full border border-[#98A78A]/30">
+                    CONNESSO
+                  </span>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 items-center justify-center py-4">
+                <div className="flex flex-col items-center gap-4 py-4">
                   <button
                     onClick={handleGoogleLogin}
                     disabled={connectingGoogle}
-                    className="w-full py-4 px-6 rounded-2xl bg-[#E8D19E] hover:bg-[#d6bc86] text-[#1e1333] font-bold text-base flex items-center justify-center gap-3 shadow-lg transition-all transform active:scale-95 disabled:opacity-50"
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#9D85C6] to-[#7A3F67] hover:brightness-110 active:scale-[0.99] transition-all duration-200 text-white font-heading font-black text-base shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
                   >
-                    {connectingGoogle ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Autenticazione nel browser in corso...</span>
-                      </>
-                    ) : (
-                      <>
-                        <GoogleIcon className="w-6 h-6" />
-                        <span>Accedi con Google (1-Click)</span>
-                      </>
-                    )}
+                    <GoogleIcon className="w-6 h-6" />
+                    {connectingGoogle ? 'Autenticazione in corso...' : 'Accedi con Google Master'}
                   </button>
-
-                  {googleError && (
-                    <div className="w-full p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/50 text-rose-300 text-xs font-mono text-center">
-                      {googleError}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 text-xs font-mono text-white/50">
-                    <ShieldCheck className="w-4 h-4 text-[#98A78A]" />
-                    <span>Nessun dato viene inviato a terzi: i token OAuth sono conservati in locale.</span>
-                  </div>
+                  <p className="text-[11px] text-[#BC957D] text-center max-w-sm">
+                    L'autenticazione sblocchera le viste *Oggi*, *Calendario* e fornira il contesto per il chatbot IA.
+                  </p>
                 </div>
               )}
             </div>
           )}
 
-          {/* STEP 2: INTELLIGENZA ARTIFICIALE (SNAILBOT MULTI-PROVIDER) */}
+          {/* STEP 2: INTELLIGENZA ARTIFICIALE (DIASPRO AI MULTI-PROVIDER) */}
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <div className="p-5 rounded-2xl bg-[#9D85C6]/10 border border-[#9D85C6]/30 flex items-start gap-4">
@@ -231,10 +218,10 @@ export default function OnboardingWizard() {
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-lg text-[#9D85C6]">
-                    Configurazione SnailBot IA
+                    Configurazione Diaspro AI
                   </h3>
                   <p className="text-xs text-white/80 leading-relaxed font-body mt-1">
-                    Seleziona il provider IA da affiancare al tuo workspace Google. SnailBot ti aiutera a riassumere progetti e organizzare task.
+                    Seleziona il provider IA da affiancare al tuo workspace Google. Diaspro AI ti aiutera a riassumere progetti e organizzare task.
                   </p>
                 </div>
               </div>

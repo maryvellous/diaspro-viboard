@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const STORAGE_KEY = 'epicsnail_sticky_notes';
+const STORAGE_KEY = 'diaspro_viboard_sticky_notes';
 
 function loadNotes() {
   try {
@@ -24,7 +24,7 @@ function randomRotation() {
 }
 
 function randomStartPosition() {
-  // Place new notes in top-left area to avoid overlapping the snail
+  // Place new notes in top-left area for clean layout
   return {
     x: 40 + Math.random() * 200,
     y: 80 + Math.random() * 180,

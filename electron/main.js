@@ -38,7 +38,7 @@ async function createWindow() {
     height: 820,
     minWidth: 1000,
     minHeight: 650,
-    title: 'epicSnail',
+    title: 'Diaspro Viboard',
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#2b1c47',

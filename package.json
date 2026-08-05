@@ -1,7 +1,7 @@
 {
-  "name": "epicsnail",
+  "name": "diaspro-viboard",
   "version": "1.0.0",
-  "description": "Personal Gamified Desktop Dashboard for Clark",
+  "description": "Personal Gamified Desktop Dashboard & Vibe for Clark",
   "author": "Clark",
   "main": "electron/main.js",
   "scripts": {
@@ -11,8 +11,8 @@
     "preview": "vite preview"
   },
   "build": {
-    "appId": "com.epicsnail.app",
-    "productName": "epicSnail",
+    "appId": "com.diaspro.viboard",
+    "productName": "Diaspro Viboard",
     "directories": {
       "output": "dist-exe"
     },

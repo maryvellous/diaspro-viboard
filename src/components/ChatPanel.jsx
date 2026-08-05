@@ -447,9 +447,9 @@ export default function ChatPanel() {
 
             <div>
               <h1 className="font-heading font-black text-base text-white leading-tight">
-                SnailBot
+                Diaspro AI
               </h1>
-              <p className="text-[11px] text-[#9D85C6]">Assistente integrato epicSnail</p>
+              <p className="text-[11px] text-[#9D85C6]">Assistente integrato Diaspro Viboard</p>
             </div>
           </div>
 

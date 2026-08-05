@@ -1,4 +1,4 @@
-# epicSnail Guidelines & Rules
+# Diaspro Viboard Guidelines & Rules
 
 ## UI & Design System Rules
 - Always strictly follow the official color palette in `src/index.css`:

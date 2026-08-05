@@ -4,7 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 class AuthVault {
-  constructor(filename = 'epicSnail_vault.json') {
+  constructor(filename = 'diaspro_vault.json') {
     const userDataPath = app ? app.getPath('userData') : process.cwd();
     this.vaultPath = path.join(userDataPath, filename);
     this.data = this.loadVault();
@@ -31,7 +31,7 @@ class AuthVault {
 
   // Fallback AES encryption key derived from OS machine ID / app path if safeStorage unavailable
   getFallbackKey() {
-    const secret = process.env.COMPUTERNAME || process.env.HOSTNAME || 'epicSnail-fallback-key';
+    const secret = process.env.COMPUTERNAME || process.env.HOSTNAME || 'diaspro-fallback-key';
     return crypto.createHash('sha256').update(secret).digest();
   }
 

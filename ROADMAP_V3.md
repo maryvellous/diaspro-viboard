@@ -1,6 +1,6 @@
-# 🐌 epicSnail — Roadmap v3.0 (Google-First Integration & AI Hub)
+# Diaspro Viboard — Roadmap v3.0 (Google-First Integration & AI Hub)
 
-Questa è la roadmap ufficiale v3.0 per **epicSnail**. L'applicazione evolve verso un **Hub di Produttività guidato da Google Workspace, SnailBot IA e Integrazioni Cloud**, con autenticazione Google obbligatoria al setup e restyling visivo rigorosamente privo di emoji e conforme al Design System ufficiale.
+Questa è la roadmap ufficiale v3.0 per **Diaspro Viboard**. L'applicazione evolve verso un **Hub di Produttività guidato da Google Workspace, Diaspro AI e Integrazioni Cloud**, con autenticazione Google obbligatoria al setup e restyling visivo rigorosamente privo di emoji e conforme al Design System ufficiale.
 
 ---
 
@@ -13,9 +13,9 @@ Questa è la roadmap ufficiale v3.0 per **epicSnail**. L'applicazione evolve ver
   - Pulsante 1-Click *"Accedi con Google"* via browser.
   - Avanzamento automatico allo Step 2 non appena il callback IPC restituisce il token di successo.
   - Recupero automatico di nome utente, email e avatar dal profilo Google per inizializzare il contesto locale.
-  - Zero possibilità di skip: l'app richiede l'account Google per sbloccare l'Hub Workspace e SnailBot.
+  - Zero possibilità di skip: l'app richiede l'account Google per sbloccare l'Hub Workspace e Diaspro AI.
 
-- [x] **Step 2: Configurazione SnailBot IA (Multi-Provider)**
+- [x] **Step 2: Configurazione Diaspro AI (Multi-Provider)**
   - Card con accento Lavender (`#9D85C6`).
   - Selezione del provider (Google Gemini, Anthropic Claude, OpenAI, DeepSeek, Ollama).
   - Test istantaneo della chiave API e salvataggio sicuro su `authVault`.
@@ -39,7 +39,7 @@ Questa è la roadmap ufficiale v3.0 per **epicSnail**. L'applicazione evolve ver
   - Visualizzazione in risalto del profilo Google connesso (Avatar, Nome, Email).
   - Lista status permessi attivi: Google Calendar, Google Tasks, Google Drive, Google Docs, Google Keep.
   - Pulsante *"Aggiorna Permessi Workspace"* per re-consent OAuth.
-  - Avviso di sicurezza: la disconnessione resetta il contesto Workspace e limita le funzionalità di SnailBot.
+  - Avviso di sicurezza: la disconnessione resetta il contesto Workspace e limita le funzionalità di Diaspro AI.
 
 - [x] **Hub Connessioni Riprogettato**
   - Card secondarie per Spotify, Pinterest e GitHub con switch toggle animati.
@@ -50,14 +50,14 @@ Questa è la roadmap ufficiale v3.0 per **epicSnail**. L'applicazione evolve ver
 
 ## 📌 Fase 3: Google Workspace Deep Integration (Completato) ✅
 
-> **Obiettivo**: Sfruttare l'Account Google Master per arricchire la vista *Oggi*, il *Calendario* e *SnailBot*.
+> **Obiettivo**: Sfruttare l'Account Google Master per arricchire la vista *Oggi*, il *Calendario* e *Diaspro AI*.
 
 - [x] **Google Tasks integrato nella Vista Oggi e Calendario**
   - Visualizzazione dei compiti di Google Tasks direttamente nella dashboard quotidiana con possibilità di spunta in tempo reale.
 - [x] **Google Drive & Docs Preview**
   - Accesso rapido ai documenti recenti e risorse di lavoro nei dettagli progetto.
-- [x] **Iniezione del Contesto Workspace in SnailBot**
-  - SnailBot legge in automatico i prossimi eventi a calendario e i task Google del giorno per rispondere a domande del tipo: *"Quali sono le mie priorità di oggi?"*.
+- [x] **Iniezione del Contesto Workspace in Diaspro AI**
+  - Diaspro AI legge in automatico i prossimi eventi a calendario e i task Google del giorno per rispondere a domande del tipo: *"Quali sono le mie priorità di oggi?"*.
 
 ---
 

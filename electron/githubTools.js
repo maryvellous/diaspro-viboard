@@ -16,7 +16,7 @@ class GitHubTools {
       const res = await fetch('https://api.github.com/user', {
         headers: {
           'Authorization': `Bearer ${pat}`,
-          'User-Agent': 'epicSnail-Desktop',
+          'User-Agent': 'Diaspro-Viboard-Desktop',
           'Accept': 'application/vnd.github.v3+json',
         },
       });
@@ -49,7 +49,7 @@ class GitHubTools {
       const res = await fetch(`https://api.github.com/user/repos?sort=${sort}&per_page=${limit}`, {
         headers: {
           'Authorization': `Bearer ${pat}`,
-          'User-Agent': 'epicSnail-Desktop',
+          'User-Agent': 'Diaspro-Viboard-Desktop',
           'Accept': 'application/vnd.github.v3+json',
         },
       });
@@ -86,7 +86,7 @@ class GitHubTools {
       const res = await fetch('https://api.github.com/user/issues?state=open&sort=updated&per_page=20', {
         headers: {
           'Authorization': `Bearer ${pat}`,
-          'User-Agent': 'epicSnail-Desktop',
+          'User-Agent': 'Diaspro-Viboard-Desktop',
           'Accept': 'application/vnd.github.v3+json',
         },
       });
@@ -123,7 +123,7 @@ class GitHubTools {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${pat}`,
-          'User-Agent': 'epicSnail-Desktop',
+          'User-Agent': 'Diaspro-Viboard-Desktop',
           'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json',
         },

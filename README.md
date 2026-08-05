@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/banner.svg" alt="epicSnail — Gamified Desktop Dashboard" width="900"/>
+  <img src="public/banner.svg" alt="Diaspro Viboard — Vibe & Gamified Desktop Dashboard" width="900"/>
 </p>
 
 <p align="center">
@@ -12,11 +12,11 @@
 
 ---
 
-## What is epicSnail?
+## What is Diaspro Viboard?
 
-**epicSnail** è il **Desktop Productivity Hub Gamificato** di nuova generazione per sviluppatori e creator. Combina la gestione dei progetti locali, la sincronizzazione profonda con **Google Workspace**, un assistente **IA Multi-Provider (SnailBot)** contestuale, integrazioni multimediali (**Spotify, Pinterest, GitHub**) e un sistema di **Gamificazione CodeQuest** in un'unica interfaccia elegante in Dark Mode.
+**Diaspro Viboard** è il **Desktop Productivity Hub Gamificato** di nuova generazione per sviluppatori e creator. Combina la gestione dei progetti locali, la sincronizzazione profonda con **Google Workspace**, un assistente **IA Multi-Provider (Diaspro AI)** contestuale, integrazioni multimediali (**Spotify, Pinterest, GitHub**) e un sistema di **Gamificazione CodeQuest** in un'unica interfaccia elegante in Dark Mode.
 
-Costruito sulle fondamenta di **Electron 34**, **React 19**, **Vite 6** e **Tailwind CSS 4**, epicSnail offre un'esperienza utente reattiva, fluida e ad altissima resa estetica.
+Costruito sulle fondamenta di **Electron 34**, **React 19**, **Vite 6** e **Tailwind CSS 4**, Diaspro Viboard offre un'esperienza utente reattiva, fluida e ad altissima resa estetica.
 
 ---
 
@@ -27,9 +27,9 @@ Costruito sulle fondamenta di **Electron 34**, **React 19**, **Vite 6** e **Tail
 - **Google Tasks & Calendar Sync**: Visualizzazione dei task quotidiani e degli eventi in vista *Oggi* e nel *Calendario*, con spunta e aggiornamento in tempo reale.
 - **Google Drive & Docs Preview**: Accesso istantaneo ai documenti di lavoro all'interno delle schede di progetto.
 
-### 🤖 SnailBot IA — Multi-Provider Assistant
+### 🤖 Diaspro AI — Multi-Provider Assistant
 - **Supporto LLM Universale**: Collega in totale sicurezza Google Gemini, Anthropic Claude, OpenAI, DeepSeek o modelli locali via Ollama.
-- **Context-Aware Assistance**: SnailBot legge in automatico gli eventi a calendario e i task quotidiani per rispondere in modo mirato alle priorità della giornata.
+- **Context-Aware Assistance**: Diaspro AI legge in automatico gli eventi a calendario e i task quotidiani per rispondere in modo mirato alle priorità della giornata.
 - **Secure Key Vault**: Gestione cifrata e locale delle chiavi API.
 
 ### 🎮 Gamification & CodeQuest
@@ -59,7 +59,7 @@ graph TD
     
     subgraph Renderer Process
         C --> D[Google Workspace Service]
-        C --> E[SnailBot AI Engine]
+        C --> E[Diaspro AI Engine]
         C --> F[CodeQuest Gamification System]
         C --> G[Git & Project Manager]
         C --> H[Media Hub: Spotify / Pinterest]
@@ -99,8 +99,8 @@ graph TD
 
 1. **Clona la repository**:
    ```bash
-   git clone https://github.com/maryvellous/epicsnail.git
-   cd epicsnail
+   git clone https://github.com/maryvellous/diaspro-viboard.git
+   cd diaspro-viboard
    ```
 
 2. **Installa le dipendenze**:
@@ -125,7 +125,7 @@ graph TD
 ## Project Structure
 
 ```text
-epicsnail/
+diaspro-viboard/
 ├── electron/                 # Processo Main Electron (main.js, IPC handlers, OAuth callback)
 ├── src/                      # Processo Renderer React
 │   ├── assets/               # Asset grafici ed icone SVG

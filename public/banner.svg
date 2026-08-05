@@ -117,7 +117,7 @@
     font-weight="900"
     letter-spacing="-1.5"
     fill="url(#textGrad)"
-    filter="url(#textglow)">epicSnail</text>
+    filter="url(#textglow)">Diaspro Viboard</text>
 
   <!-- Subtitle -->
   <text
@@ -127,7 +127,7 @@
     font-size="13"
     font-weight="500"
     letter-spacing="4"
-    fill="rgba(232,209,158,0.65)">GAMIFIED DESKTOP DASHBOARD</text>
+    fill="rgba(232,209,158,0.65)">VIBE &amp; GAMIFIED DESKTOP DASHBOARD</text>
 
   <!-- Tech pills row -->
   <!-- Electron -->

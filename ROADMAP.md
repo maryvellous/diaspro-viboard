@@ -1,6 +1,6 @@
-# 🐌 epicSnail — Roadmap v2.0 (Bug Fix & Migliorie Secondarie)
+# Diaspro Viboard — Roadmap v2.0 (Bug Fix & Migliorie Secondarie)
 
-Questa è la nuova roadmap ufficiale per lo sviluppo di **epicSnail**. È suddivisa in fasi progressive per migliorare la stabilità delle connessioni, estendere le funzionalità di produttività e perfezionare l'esperienza visiva e la gamification.
+Questa è la nuova roadmap ufficiale per lo sviluppo di **Diaspro Viboard**. È suddivisa in fasi progressive per migliorare la stabilità delle connessioni, estendere le funzionalità di produttività e perfezionare l'esperienza visiva e la gamification.
 
 ---
 
@@ -55,7 +55,7 @@ Questa è la nuova roadmap ufficiale per lo sviluppo di **epicSnail**. È suddiv
 - [x] **Sidebar Lava Lamp** — Animazione CSS con bolle che salgono, cambiano forma e si fondono.
 - [x] **Calendario: Overlay Click-Only** — Card espansa come overlay assoluto, nessuna scrollbar.
 - [x] **Spotify: Player Premium** — Copertina blur dominante, progress bar, visualizzatore barre pulsanti.
-- [x] **Chat rinominata "🐌 SnailBot"** — Rimossa icona robot, bubble cromaticamente distinte (AI vs utente).
+- [x] **Chat rinominata "Diaspro AI"** — Rimossa icona robot, bubble cromaticamente distinte (AI vs utente).
 - [x] **Hub Connessioni (visivo)** — Card di stato con badge Google / Spotify / GitHub nelle Impostazioni.
 
 ---
@@ -65,7 +65,7 @@ Questa è la nuova roadmap ufficiale per lo sviluppo di **epicSnail**. È suddiv
 > **Obiettivo**: trasformare l'Hub Connessioni in un pannello di controllo interattivo. Le sezioni della sidebar diventano **opt-in** tramite switch toggle animati.
 
 - [ ] **Redesign card "Hub Connessioni"** nelle Impostazioni
-  - Switch toggle animati (stile iOS, palette epicSnail) per **Spotify** e **Pinterest**.
+  - Switch toggle animati (stile iOS, palette Diaspro Viboard) per **Spotify** e **Pinterest**.
   - Attivare uno switch connette il servizio (se non già connesso) e abilita la voce in sidebar.
   - Disattivare uno switch nasconde la voce dalla sidebar **e rende inaccessibile la schermata** del servizio (nessun routing verso di essa).
   - Sezione **Google espandibile**: singola riga con badge di stato → quando aperta mostra chiclet per:
@@ -75,7 +75,7 @@ Questa è la nuova roadmap ufficiale per lo sviluppo di **epicSnail**. È suddiv
   - Sezione **GitHub**: riga semplice con badge stato (nessuno switch — sempre visibile).
 
 - [ ] **Sidebar dinamica** (`Sidebar.jsx`, `App.jsx`)
-  - 5 voci sempre fisse: *Oggi*, *Progetti*, *Calendario*, *SnailBot*, *Impostazioni*.
+  - 5 voci sempre fisse: *Oggi*, *Progetti*, *Calendario*, *Diaspro AI*, *Impostazioni*.
   - Voce **Spotify** appare/scompare in base allo switch Hub — se la tab attiva è `spotify` e lo switch viene disattivato, l'app reindirizza automaticamente a *Oggi*.
   - Voce **Pinterest** (nuova) appare/scompare in base allo switch Hub — stesso comportamento di Spotify.
   - Le **schermate** `SpotifyWidget` e `PinterestView` sono montate nel router **solo se** il rispettivo switch è `true`. Non sono raggiungibili in nessun altro modo (né da URL, né da Tab, né da shortcut `Tab`).

@@ -73,11 +73,11 @@ class OAuthManager {
             res.end(`
               <!DOCTYPE html>
               <html>
-              <head><title>epicSnail - Autenticazione Completata</title></head>
+              <head><title>Diaspro Viboard - Autenticazione Completata</title></head>
               <body style="font-family: system-ui, -apple-system, sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
                 <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 20px; border: 1px solid #9D85C6; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h1 style="color: #9D85C6; margin-bottom: 12px; font-size: 24px;">Autenticazione Completata</h1>
-                  <p style="color: #E8D19E; font-size: 15px; margin-bottom: 16px;">L'account Google Workspace e collegato a epicSnail.</p>
+                  <p style="color: #E8D19E; font-size: 15px; margin-bottom: 16px;">L'account Google Workspace e collegato a Diaspro Viboard.</p>
                   <p style="color: #A5C4DC; font-size: 13px;">Puoi chiudere questa scheda e tornare all'applicazione.</p>
                 </div>
               </body>

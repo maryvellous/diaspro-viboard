@@ -82,7 +82,7 @@ class SpotifyTools {
             res.end(`
               <!DOCTYPE html>
               <html>
-              <head><title>epicSnail - Spotify Connesso</title></head>
+              <head><title>Diaspro Viboard - Spotify Connesso</title></head>
               <body style="font-family: system-ui, -apple-system, sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
                 <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 20px; border: 1px solid #7A3F67; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h1 style="color: #9D85C6; margin-bottom: 12px; font-size: 24px;">Spotify Connesso</h1>

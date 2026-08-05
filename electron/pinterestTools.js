@@ -87,12 +87,12 @@ class PinterestTools {
             res.end(`
               <!DOCTYPE html>
               <html>
-              <head><title>epicSnail - Pinterest Connesso</title></head>
+              <head><title>Diaspro Viboard - Pinterest Connesso</title></head>
               <body style="font-family: system-ui, -apple-system, sans-serif; background: #1e1333; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
                 <div style="text-align: center; background: #2b1c47; padding: 40px; border-radius: 24px; border: 1px solid #BC957D; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                   <h1 style="color: #E8D19E; font-size: 24px; margin-bottom: 12px;">Pinterest Collegato</h1>
                   <p style="color: #A5C4DC; font-size: 15px; margin-bottom: 16px;">Account Pinterest autorizzato con successo.</p>
-                  <p style="color: #ffffff; opacity: 0.6; font-size: 13px;">Puoi chiudere questa finestra e tornare ad epicSnail.</p>
+                  <p style="color: #ffffff; opacity: 0.6; font-size: 13px;">Puoi chiudere questa finestra e tornare a Diaspro Viboard.</p>
                 </div>
               </body>
               </html>

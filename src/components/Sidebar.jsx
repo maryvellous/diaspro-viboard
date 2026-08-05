@@ -40,7 +40,7 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
     ...(enabledSections.spotify   ? [{ id: 'spotify',    icon: AestheticEqualiserIcon,  label: 'Spotify' }]    : []),
     ...(enabledSections.pinterest ? [{ id: 'pinterest',  icon: AestheticHeartIcon,      label: 'Moodboard' }]  : []),
     { id: 'codequest', icon: AestheticLightBulbIcon, label: 'CodeQuest' },
-    { id: 'chat',      icon: AestheticCommentsIcon,  label: 'SnailBot' },
+    { id: 'chat',      icon: AestheticCommentsIcon,  label: 'Diaspro AI' },
     { id: 'settings',  icon: AestheticCogIcon,       label: 'Impostazioni' },
   ];
 
@@ -93,7 +93,7 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
 
       {/* Bottom Label */}
       <div className="relative z-10 text-[10px] font-mono font-bold text-white/40 uppercase tracking-widest pb-2">
-        epicSnail
+        Diaspro Viboard
       </div>
     </aside>
   );

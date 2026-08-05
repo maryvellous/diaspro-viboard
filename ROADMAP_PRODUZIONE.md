@@ -1,6 +1,6 @@
-# epicSnail — Roadmap di Produzione e Rilascio Pubblico (Portfolio Ready)
+# Diaspro Viboard — Roadmap di Produzione e Rilascio Pubblico (Portfolio Ready)
 
-Questo documento definisce la roadmap strategica e operativa per preparare la codebase di **epicSnail** al rilascio pubblico gratuito (Open Source / Freeware) e per trasformare il progetto in un pezzo forte del portfolio sviluppatore.
+Questo documento definisce la roadmap strategica e operativa per preparare la codebase di **Diaspro Viboard** al rilascio pubblico gratuito (Open Source / Freeware) e per trasformare il progetto in un pezzo forte del portfolio sviluppatore.
 
 ---
 
@@ -72,11 +72,11 @@ L'obiettivo di questa roadmap è convertire l'applicazione desktop da dashboard 
 
 - [ ] **3.1 Modalità "Demo / Playground Mode"**
   - Introduzione di un pulsante *"Esplora la Demo"* nella schermata di setup iniziale.
-  - Popolamento automatico dell'app con dati di prova sintetici (task quotidiani, eventi a calendario fittizi, riproduttore musicale simulato, risposta SnailBot di test).
+  - Popolamento automatico dell'app con dati di prova sintetici (task quotidiani, eventi a calendario fittizi, riproduttore musicale simulato, risposta Diaspro AI di test).
   - Consente ai recensori del portfolio o ai selezionatori HR di testare la UI e la reattività dell'app in 5 secondi senza dover configurare account personalizzati.
 
 - [ ] **3.2 First-Time User Experience (FTUE) & Quick Tour**
-  - Guida introduttiva (Interactive Onboarding Modal) che illustra i punti di forza dell'app: Google Workspace Hub, SnailBot IA, Gestione Progetti e Dashboard Gamificata.
+  - Guida introduttiva (Interactive Onboarding Modal) che illustra i punti di forza dell'app: Google Workspace Hub, Diaspro AI, Gestione Progetti e Dashboard Gamificata.
   - Suggerimenti contestuali (Tooltips) per spiegare le funzionalità avanzate al primo utilizzo.
 
 - [ ] **3.3 Audit UI & Responsive Desktop Layout**
@@ -118,12 +118,12 @@ L'obiettivo di questa roadmap è convertire l'applicazione desktop da dashboard 
 
 ## 📌 Fase 5: Documentazione di Livello Enterprise per GitHub & Portfolio
 
-> **Obiettivo**: Rendere la repository GitHub di epicSnail una vetrina tecnica impeccabile, chiara e accattivante per recruiter, sviluppatori e utenti finali.
+> **Obiettivo**: Rendere la repository GitHub di Diaspro Viboard una vetrina tecnica impeccabile, chiara e accattivante per recruiter, sviluppatori e utenti finali.
 
 - [ ] **5.1 Redazione di un `README.md` d'Impatto**
   - **Header & Badge**: Status Build, Release Version, License (MIT), Electron Version, React Version, Platform Compatibility.
   - **Hero Banner / Showcase**: GIF animate ad alta risoluzione e screenshot curati della dashboard e delle funzionalità chiave.
-  - **Problem Statement & Solution**: Spiegazione di come epicSnail risolve il sovraccarico cognitivo unificando produttività, IA e gamification.
+  - **Problem Statement & Solution**: Spiegazione di come Diaspro Viboard risolve il sovraccarico cognitivo unificando produttività, IA e gamification.
   - **Architecture Overview**: Schema dell'architettura software (Diagramma Mermaid della comunicazione Main Process, Renderer, IPC, OAuth Handlers e Provider IA).
   - **Feature Highlights**: Elenco dettagliato delle funzionalità tecniche implementate.
   - **Quick Start Guide**:

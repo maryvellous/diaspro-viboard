@@ -5,12 +5,12 @@ import { soundFX } from '../utils/audio';
 const GamificationContext = createContext();
 
 export const LEVEL_RANKS = [
-  { level: 1, title: 'Snail Starter', perk: 'Modalità base attiva' },
-  { level: 2, title: 'Speedy Mollusk', perk: 'Badge personalizzati attivati' },
+  { level: 1, title: 'Viboard Starter', perk: 'Modalità base attiva' },
+  { level: 2, title: 'Speedy Coder', perk: 'Badge personalizzati attivati' },
   { level: 3, title: 'Task Explorer', perk: 'Temi colori card personalizzati' },
   { level: 4, title: 'Project Specialist', perk: 'Multi-Provider BYOK Chat AI' },
   { level: 5, title: 'Turbo Architect', perk: 'Contesto avanzato progetti & OAuth' },
-  { level: 10, title: 'Legendary Snail Master', perk: 'Maestro supremo della produttività' }
+  { level: 10, title: 'Legendary Viboard Master', perk: 'Maestro supremo della produttività' }
 ];
 
 export const DEFAULT_XP_RULES = {

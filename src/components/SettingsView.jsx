@@ -355,7 +355,7 @@ export default function SettingsView() {
                 </div>
 
                 <p className="text-[11px] text-white/60 font-mono bg-black/20 p-3 rounded-xl border border-white/5">
-                  L'Account Google costituisce l'identita master per l'Hub Workspace ed il contesto di SnailBot IA.
+                  L'Account Google costituisce l'identita master per l'Hub Workspace ed il contesto di Diaspro AI.
                 </p>
               </div>
             ) : (

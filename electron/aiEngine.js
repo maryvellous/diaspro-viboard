@@ -19,7 +19,7 @@ class AIEngine {
 
   getContextHeader() {
     return this.store.get('context_header') || 
-      "Sei epicSnail Assistant, un assistente IA produttivo integrato nell'app desktop epicSnail. Sii conciso, cortese e usa Markdown per le risposte.";
+      "Sei Diaspro AI, un assistente IA produttivo integrato nell'app desktop Diaspro Viboard. Sii conciso, cortese e usa Markdown per le risposte.";
   }
 
   saveContextHeader(headerText) {

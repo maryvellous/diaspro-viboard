@@ -521,18 +521,18 @@ export default function TodayView() {
         }}
       />
 
-      {/* ── Layer 1: Snail wallpaper ───────────────────────────────── */}
-      <img
-        src="/ntp_snail.png"
-        alt=""
+      {/* ── Layer 1: Ambient background glow ───────────────────────── */}
+      <div
         aria-hidden="true"
         style={{
           position: 'absolute',
-          bottom: -30,
-          right: -40,
-          width: 580,
-          opacity: 0.18,
-          filter: 'saturate(0.45) brightness(0.85)',
+          bottom: -50,
+          right: -50,
+          width: 500,
+          height: 500,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(122,63,103,0.15) 0%, rgba(107,88,135,0.08) 50%, transparent 70%)',
+          filter: 'blur(40px)',
           pointerEvents: 'none',
           userSelect: 'none',
           zIndex: 1,
