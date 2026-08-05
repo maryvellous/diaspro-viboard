@@ -2,7 +2,7 @@
   "name": "diaspro-viboard",
   "version": "1.0.0",
   "description": "Personal Gamified Desktop Dashboard & Vibe for Clark",
-  "author": "maryvellous",
+  "author": "Maria Teresa Dembech",
   "main": "electron/main.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development concurrently \"vite\" \"wait-on tcp:5173 && electron .\"",
