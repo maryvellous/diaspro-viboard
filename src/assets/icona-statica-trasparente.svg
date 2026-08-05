@@ -39,11 +39,7 @@
     <ellipse cx="410" cy="460" rx="40" ry="38" fill="rgba(157,133,198,0.32)"/>
   </g>
 
-  <!-- Top-edge shimmer line -->
-  <rect x="0" y="0" width="500" height="1" fill="rgba(255,255,255,0.12)"/>
 
-  <!-- Bottom accent line — lavender -->
-  <rect x="0" y="498" width="500" height="2" fill="rgba(157,133,198,0.45)"/>
 
   <!-- ── Central V ── -->
   <text
