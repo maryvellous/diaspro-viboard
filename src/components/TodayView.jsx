@@ -72,6 +72,9 @@ function TodayHeader({ userName, level, xpInCurrentLevel, xpNeededForNext, level
         >
           Bentornato{userName ? `, ${userName}` : ''}!
         </h1>
+        <span className="inline-block mt-2 px-3 py-1 bg-[#E8D19E]/20 text-[#E8D19E] border border-[#E8D19E]/40 rounded-full font-mono text-[11px] font-bold">
+          Google Workspace Hub Attivo
+        </span>
       </div>
 
       {/* XP bar compact */}
