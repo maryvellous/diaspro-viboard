@@ -2,35 +2,38 @@
   <img src="public/banner.svg" alt="epicSnail — Gamified Desktop Dashboard" width="900"/>
 </p>
 
-![Electron](https://img.shields.io/badge/Electron-34.3-47848F?style=for-the-badge&logo=electron&logoColor=white)
-![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+<p align="center">
+  <img src="https://img.shields.io/badge/Electron-34.3-47848F?style=for-the-badge&logo=electron&logoColor=white" alt="Electron"/>
+  <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS"/>
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
+</p>
 
-**EpicSnail** è una dashboard desktop moderna, elegante e gamificata sviluppata in **Electron**, **React** e **Vite**. È progettata per gestire in modo fluido i propri progetti locali, integrando la lettura dello stato Git, la gestione rapida di task mediante Post-it fluttuanti ed un design system altamente rifinito con micro-animazioni.
-
----
-
-## ✨ Caratteristiche Principali
-
-- 🚀 **Gestione Progetti & Canvas Grid**:
-  - Schede grafiche curate per ciascun progetto locale.
-  - Ampio respiro visivo (*canvas outer margins*) per uno sfondo rilassante ed un'interfaccia priva di disordine.
-- 📌 **Post-it Fluttuanti (Sticky Overlay)**:
-  - Badge sticker `📌 1 Task` elegante sulle card dei progetti.
-  - Foglietti adesivi fluttuanti sovrapposti in modal/overlay con ombre 3D, espandibili e chiudibili senza deformare la griglia.
-- 🌿 **Integrazione Git in Tempo Reale**:
-  - Rilevamento automatico del branch attivo (`main`, `dev`, ecc.).
-  - Indicatore di modifiche locali (`Clean`, `x modificati`) e del messaggio dell'ultimo commit.
-- 🎨 **Design System & Micro-Interazioni**:
-  - Badge e pillole dinamicamente proporzionati (`font-size`, `padding`, `border-radius`).
-  - Effetti celebrativi con confetti ed animazioni fluide al completamento dei task.
-  - Palette cromatica scura ad alto contrasto con vetrofrassino e sfumature moderne.
+**EpicSnail** 🐌 è una dashboard desktop moderna, elegante e gamificata sviluppata in **Electron**, **React** e **Vite**. È progettata per gestire in modo fluido i propri progetti locali, integrando la lettura dello stato Git, la gestione rapida di task mediante Post-it fluttuanti ed un design system altamente rifinito con micro-animazioni.
 
 ---
 
-## 🛠️ Tech Stack
+## Caratteristiche Principali
+
+- **Gestione Progetti & Canvas Grid** — Schede grafiche curate per ciascun progetto locale, con ampio respiro visivo e sfondo rilassante.
+- **Post-it Fluttuanti** — Foglietti adesivi in overlay con ombre 3D, espandibili e chiudibili senza deformare la griglia.
+- **Integrazione Git in Tempo Reale** — Rilevamento automatico del branch attivo, indicatore di modifiche locali e messaggio dell'ultimo commit.
+- **Design System & Micro-Interazioni** — Palette cromatica scura, effetti confetti al completamento dei task e animazioni fluide ovunque.
+
+---
+
+## Download ⭐
+
+Scarica l'ultima versione compilata direttamente dalla pagina **Releases** — nessuna dipendenza richiesta, basta eseguire il file.
+
+**[→ Vai alla pagina Releases](https://github.com/maryvellous/epicsnail/releases/latest)**
+
+> Sono disponibili installer per **Windows** (`.exe`). Versioni macOS e Linux in arrivo.
+
+---
+
+## Tech Stack
 
 | Tecnologia | Ruolo |
 | :--- | :--- |
@@ -44,46 +47,7 @@
 
 ---
 
-## 🚀 Guida all'Installazione ed Avvio
-
-### Requisiti Prerequisiti
-
-- [Node.js](https://nodejs.org/) (versione `18.x` o superiore consigliata)
-- [npm](https://www.npmjs.com/) o `pnpm` / `yarn`
-- [Git](https://git-scm.com/) installato nel sistema
-
-### 1. Clonare il Repository
-
-```bash
-git clone https://github.com/TUO-USERNAME/epicsnail.git
-cd epicsnail
-```
-
-### 2. Installare le Dipendenze
-
-```bash
-npm install
-```
-
-### 3. Avviare in Ambiente di Sviluppo
-
-Il comando avvia sia il dev server Vite sia la finestra dell'applicazione Electron con Hot Reload (HMR):
-
-```bash
-npm run dev
-```
-
-### 4. Compilazione per la Produzione
-
-Per compilare gli asset della UI per la produzione:
-
-```bash
-npm run build
-```
-
----
-
-## 📁 Struttura del Progetto
+## Struttura del Progetto
 
 ```text
 .
@@ -101,6 +65,6 @@ npm run build
 
 ---
 
-## 📄 Licenza
+## Licenza
 
 Questo progetto è distribuito sotto licenza **MIT**. Consulta il file `LICENSE` per maggiori dettagli.
