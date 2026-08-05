@@ -86,6 +86,15 @@ async function getGitProjectDetails(folderPath) {
 
     const projectName = path.basename(folderPath);
 
+    let lastFileModified = null;
+    try {
+      const gitIndexPath = path.join(folderPath, '.git', 'index');
+      const stat = await fs.stat(gitIndexPath);
+      lastFileModified = stat.mtime.toISOString();
+    } catch (e) {
+      // ignore
+    }
+
     return {
       id: Buffer.from(folderPath).toString('base64'),
       name: projectName,
@@ -98,6 +107,7 @@ async function getGitProjectDetails(folderPath) {
       modified: status.modified.length,
       staged: status.staged.length,
       not_added: status.not_added.length,
+      lastFileModified: lastFileModified,
       lastCommit: log.all.length > 0 ? {
         hash: log.all[0].hash.substring(0, 7),
         message: log.all[0].message,

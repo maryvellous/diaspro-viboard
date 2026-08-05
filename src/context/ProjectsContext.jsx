@@ -42,7 +42,17 @@ export function ProjectsProvider({ children }) {
     if (window.electronAPI) {
       try {
         const rawLocalRepos = await window.electronAPI.scanRepos();
-        const localRepos = Array.isArray(rawLocalRepos) ? rawLocalRepos.map(l => ({ ...l, isLocal: true })) : [];
+        const localRepos = Array.isArray(rawLocalRepos) ? rawLocalRepos.map(l => {
+          const actualModDate = (l.modified > 0 || l.staged > 0 || l.not_added > 0)
+            ? (l.lastFileModified || l.lastCommit?.date || null)
+            : (l.lastCommit?.date || l.lastFileModified || null);
+
+          return {
+            ...l,
+            isLocal: true,
+            lastModified: actualModDate
+          };
+        }) : [];
         let mergedProjects = [...localRepos];
 
         // Fetch remote GitHub repos safely
@@ -64,6 +74,11 @@ export function ProjectsProvider({ children }) {
 
               if (matchedRemote) {
                 usedRemoteIds.add(matchedRemote.id);
+                const remoteDate = matchedRemote.pushed_at || matchedRemote.updated_at;
+                const bestDate = (local.modified > 0 || local.staged > 0 || local.not_added > 0)
+                  ? (local.lastFileModified || local.lastCommit?.date || remoteDate || null)
+                  : (local.lastCommit?.date || remoteDate || local.lastFileModified || null);
+
                 return {
                   ...local,
                   isGitHubRemote: true,
@@ -72,6 +87,7 @@ export function ProjectsProvider({ children }) {
                   stargazers_count: matchedRemote.stargazers_count,
                   open_issues_count: matchedRemote.open_issues_count,
                   language: matchedRemote.language,
+                  lastModified: bestDate,
                 };
               }
               return {
@@ -96,9 +112,9 @@ export function ProjectsProvider({ children }) {
                   stargazers_count: r.stargazers_count,
                   open_issues_count: r.open_issues_count,
                   language: r.language,
-                  createdAt: r.created_at || new Date().toISOString(),
-                  lastModified: r.updated_at || new Date().toISOString(),
-                  recentCommits: [{ hash: 'remote', message: r.description || 'Repository GitHub remota', date: (r.updated_at || '').split('T')[0] }]
+                  createdAt: r.created_at || null,
+                  lastModified: r.pushed_at || r.updated_at || r.created_at || null,
+                  recentCommits: [{ hash: 'remote', message: r.description || 'Repository GitHub remota', date: (r.pushed_at || r.updated_at || '').split('T')[0] }]
                 });
               }
             });
@@ -319,13 +335,13 @@ export function ProjectsProvider({ children }) {
 
       // Unpinned sorting based on selected sortBy
       if (sortBy === 'modified_desc') {
-        const timeA = new Date(a.lastModified || 0).getTime();
-        const timeB = new Date(b.lastModified || 0).getTime();
+        const timeA = new Date(a.lastModified || a.lastCommit?.date || a.lastUpdated || 0).getTime();
+        const timeB = new Date(b.lastModified || b.lastCommit?.date || b.lastUpdated || 0).getTime();
         return timeB - timeA;
       }
       if (sortBy === 'modified_asc') {
-        const timeA = new Date(a.lastModified || 0).getTime();
-        const timeB = new Date(b.lastModified || 0).getTime();
+        const timeA = new Date(a.lastModified || a.lastCommit?.date || a.lastUpdated || 0).getTime();
+        const timeB = new Date(b.lastModified || b.lastCommit?.date || b.lastUpdated || 0).getTime();
         return timeA - timeB;
       }
       if (sortBy === 'created_desc') {

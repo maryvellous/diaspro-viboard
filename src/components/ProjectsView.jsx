@@ -27,8 +27,10 @@ import {
   ArrowUpDown,
   Globe,
   RefreshCw,
-  Star
+  Star,
+  Clock
 } from 'lucide-react';
+import { formatLastModified } from '../utils/dateUtils';
 
 export default function ProjectsView({ onNavigateTab }) {
   const {
@@ -224,6 +226,9 @@ export default function ProjectsView({ onNavigateTab }) {
           const isHidden = hiddenProjectIds.includes(project.id);
           const isOverlayOpen = activePostItId === project.id;
 
+          const lastModifiedDate = project.lastModified || project.lastCommit?.date || project.lastFileModified || null;
+          const formattedModDate = formatLastModified(lastModifiedDate);
+
           return (
             <div
               key={project.id}
@@ -357,12 +362,26 @@ export default function ProjectsView({ onNavigateTab }) {
                   }`}>
                     {project.path}
                   </p>
+
+                  {/* Last Modified Indicator */}
+                  {formattedModDate && (
+                    <div className={`flex items-center gap-1.5 text-[11px] font-semibold mt-2.5 ${
+                      isDarkTheme ? 'text-[#A5C4DC]/90' : 'text-[#1e1333]/80'
+                    }`}>
+                      <Clock className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                      <span>{formattedModDate}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* 2. Badges Block (Explicit Card Section 2) */}
                 <div className="card-badges-block flex-wrap">
                   {project.isLocal !== false && (
-                    <span className="badge-pill bg-[#6B5887]/60 text-[#9D85C6] border border-[#9D85C6]/40">
+                    <span className={`badge-pill ${
+                      isDarkTheme
+                        ? 'bg-[#6B5887]/60 text-[#9D85C6] border border-[#9D85C6]/40'
+                        : 'bg-[#1e1333] text-[#A5C4DC] border border-[#A5C4DC]/40 font-bold'
+                    }`}>
                       Locale
                     </span>
                   )}
@@ -373,7 +392,11 @@ export default function ProjectsView({ onNavigateTab }) {
                     </span>
                   )}
 
-                  <span className="badge-pill bg-white/15 text-white border border-white/20">
+                  <span className={`badge-pill ${
+                    isDarkTheme
+                      ? 'bg-white/15 text-white border border-white/20'
+                      : 'bg-[#1e1333]/15 text-[#1e1333] border border-[#1e1333]/25 font-extrabold'
+                  }`}>
                     <GitBranch className="w-3.5 h-3.5 shrink-0" />
                     <span>{project.branch}</span>
                   </span>
@@ -526,7 +549,11 @@ export default function ProjectsView({ onNavigateTab }) {
                 {project.isLocal !== false && (
                   <button
                     onClick={() => syncProject(project.path)}
-                    className="action-pill bg-white/10 hover:bg-white/20 text-[#A5C4DC] border border-white/20"
+                    className={`action-pill ${
+                      isDarkTheme
+                        ? 'bg-white/10 hover:bg-white/20 text-[#A5C4DC] border border-white/20'
+                        : 'bg-[#1e1333]/15 hover:bg-[#1e1333]/25 text-[#1e1333] border border-[#1e1333]/30 font-extrabold'
+                    }`}
                     title="Esegui git fetch sul progetto"
                   >
                     <RefreshCw className="w-3.5 h-3.5 shrink-0" />

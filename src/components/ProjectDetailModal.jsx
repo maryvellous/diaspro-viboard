@@ -12,8 +12,10 @@ import {
   Sparkles,
   FileText,
   CheckSquare,
-  FolderOpen
+  FolderOpen,
+  Clock
 } from 'lucide-react';
+import { formatLastModified } from '../utils/dateUtils';
 
 export default function ProjectDetailModal() {
   const {
@@ -41,6 +43,8 @@ export default function ProjectDetailModal() {
   const projectTasks = tasks.filter((t) => t.projectId === activeProject.id);
   const noteContent = notes[activeProject.id] || '';
   const customName = projectNicknames[activeProject.id] || activeProject.name;
+  const lastModifiedDate = activeProject.lastModified || activeProject.lastCommit?.date || activeProject.lastFileModified || null;
+  const formattedModDate = formatLastModified(lastModifiedDate);
 
   const handleAddTask = (e) => {
     e.preventDefault();
@@ -62,6 +66,12 @@ export default function ProjectDetailModal() {
               </span>
             </h2>
             <p className="text-xs font-mono text-[#A5C4DC] mt-1">{activeProject.path}</p>
+            {formattedModDate && (
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#A5C4DC]/80 mt-1.5">
+                <Clock className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                <span>{formattedModDate}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
