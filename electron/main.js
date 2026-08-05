@@ -39,6 +39,7 @@ async function createWindow() {
     minWidth: 1000,
     minHeight: 650,
     title: 'Diaspro Viboard',
+    icon: path.join(__dirname, '../public/icon.png'),
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#2b1c47',

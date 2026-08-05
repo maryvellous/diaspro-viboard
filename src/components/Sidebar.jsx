@@ -1,4 +1,4 @@
-import React from 'react';
+import animatedIcon from '../icona-animata-trasparente.svg';
 import { useSections } from '../context/SectionsContext';
 import { 
   AestheticSunIcon, 
@@ -67,7 +67,12 @@ export default function Sidebar({ currentTab, setCurrentTab }) {
       </div>
 
       {/* ── Foreground Content ── */}
-      <div className="relative z-10 flex flex-col items-center gap-8 w-full pt-2">
+      <div className="relative z-10 flex flex-col items-center gap-6 w-full pt-1">
+        {/* Brand App Logo */}
+        <div className="w-14 h-14 rounded-2xl bg-[#2b1c47]/80 border border-[#9D85C6]/40 p-1.5 shadow-xl flex items-center justify-center backdrop-blur-md group hover:scale-105 transition-transform" title="Diaspro Viboard">
+          <img src={animatedIcon} alt="Diaspro Viboard Icon" className="w-full h-full object-contain filter drop-shadow-md" />
+        </div>
+
         {/* Navigation Tabs */}
         <nav className="flex flex-col gap-5">
           {navItems.map((item) => {
