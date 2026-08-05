@@ -241,3 +241,109 @@ html, body {
 .no-drag {
   -webkit-app-region: no-drag;
 }
+
+/* ── Lava Lamp Sidebar Bubbles ── */
+@keyframes lavalamp {
+  0% {
+    transform: translateY(0) scale(1);
+    border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  30% {
+    border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+    transform: translateY(-25vh) scale(1.15);
+  }
+  55% {
+    border-radius: 70% 30% 50% 50% / 30% 70% 50% 60%;
+    transform: translateY(-50vh) scale(0.9);
+  }
+  75% {
+    border-radius: 35% 65% 65% 35% / 55% 45% 55% 45%;
+    transform: translateY(-75vh) scale(1.2);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-110vh) scale(0.8);
+    border-radius: 50% 50% 50% 50%;
+    opacity: 0;
+  }
+}
+
+.lava-bubble {
+  position: absolute;
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+  animation: lavalamp linear infinite;
+  will-change: transform, border-radius, opacity;
+  filter: blur(6px);
+}
+
+/* ── Spotify Audio Visualizer Bars ── */
+@keyframes vizbar1 { 0%,100%{height:4px}  25%{height:20px} 60%{height:10px} }
+@keyframes vizbar2 { 0%,100%{height:8px}  35%{height:28px} 65%{height:6px}  }
+@keyframes vizbar3 { 0%,100%{height:6px}  15%{height:36px} 50%{height:12px} }
+@keyframes vizbar4 { 0%,100%{height:12px} 40%{height:24px} 70%{height:8px}  }
+@keyframes vizbar5 { 0%,100%{height:4px}  55%{height:32px} 80%{height:16px} }
+@keyframes vizbar6 { 0%,100%{height:10px} 20%{height:20px} 75%{height:6px}  }
+@keyframes vizbar7 { 0%,100%{height:6px}  45%{height:38px} 60%{height:14px} }
+
+.vizbar { border-radius: 3px 3px 0 0; transition: opacity 0.4s; will-change: height; }
+.vizbar:nth-child(7n+1) { animation: vizbar1 0.7s ease-in-out infinite; }
+.vizbar:nth-child(7n+2) { animation: vizbar2 0.9s ease-in-out infinite; }
+.vizbar:nth-child(7n+3) { animation: vizbar3 0.6s ease-in-out infinite; }
+.vizbar:nth-child(7n+4) { animation: vizbar4 0.8s ease-in-out infinite; }
+.vizbar:nth-child(7n+5) { animation: vizbar5 1.0s ease-in-out infinite; }
+.vizbar:nth-child(7n+6) { animation: vizbar6 0.75s ease-in-out infinite; }
+.vizbar:nth-child(7n+0) { animation: vizbar7 0.65s ease-in-out infinite; }
+
+/* ── Spotify Progress Bar ── */
+@keyframes progressbar {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* ── Hub Toggle Switch ── */
+.hub-toggle {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 25px;
+  shrink: 0;
+}
+.hub-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.hub-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background-color: #1e1333;
+  border: 1.5px solid rgba(157, 133, 198, 0.35);
+  border-radius: 9999px;
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+}
+.hub-toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 17px;
+  width: 17px;
+  left: 3px;
+  bottom: 2.5px;
+  background-color: #6B5887;
+  border-radius: 50%;
+  transition: all 0.25s ease-in-out;
+}
+.hub-toggle input:checked + .hub-toggle-slider {
+  background-color: #7A3F67;
+  border-color: #E8D19E;
+}
+.hub-toggle input:checked + .hub-toggle-slider::before {
+  transform: translateX(20px);
+  background-color: #E8D19E;
+}

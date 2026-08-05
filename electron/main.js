@@ -7,6 +7,7 @@ const GitHubTools = require('./githubTools');
 const OAuthManager = require('./oauthManager');
 const GoogleTools = require('./googleTools');
 const SpotifyTools = require('./spotifyTools');
+const PinterestTools = require('./pinterestTools');
 const AIEngine = require('./aiEngine');
 const { scanDirectoryForGitRepos, getGitProjectDetails, executeGitAction } = require('./gitScanner');
 const { openTerminal, openVSCode, openAndroidStudio, openAntigravityIDE, openInExplorer } = require('./systemOps');
@@ -16,7 +17,9 @@ const authVault = new AuthVault();
 const githubTools = new GitHubTools(authVault);
 const googleTools = new GoogleTools(authVault);
 const spotifyTools = new SpotifyTools(authVault);
+const pinterestTools = new PinterestTools(authVault);
 const aiEngine = new AIEngine(authVault, store, githubTools, googleTools, spotifyTools);
+
 let mainWindow = null;
 
 function checkDevServer(url) {
@@ -35,7 +38,7 @@ async function createWindow() {
     height: 820,
     minWidth: 1000,
     minHeight: 650,
-    title: 'epicSnail',
+    title: 'Diaspro Viboard',
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#2b1c47',
@@ -129,6 +132,10 @@ ipcMain.handle('system:open-explorer', async (event, folderPath) => {
   return await openInExplorer(folderPath);
 });
 
+ipcMain.handle('system:open-external', async (event, url) => {
+  if (url) shell.openExternal(url);
+});
+
 ipcMain.handle('store:get-all', async () => {
   return store.data;
 });
@@ -198,6 +205,19 @@ ipcMain.handle('google:get-tasks', async () => {
   return await googleTools.getGoogleTasks();
 });
 
+ipcMain.handle('google:toggle-task', async (event, { taskId, completed }) => {
+  return await googleTools.toggleGoogleTask(taskId, completed);
+});
+
+ipcMain.handle('google:create-task', async (event, { title, due }) => {
+  return await googleTools.createGoogleTask(title, due);
+});
+
+ipcMain.handle('google:get-drive-files', async (event, pageSize) => {
+  return await googleTools.getDriveFiles(pageSize);
+});
+
+
 // Spotify Integration IPC Handlers
 ipcMain.handle('spotify:start-oauth', async () => {
   return await spotifyTools.startSpotifyOAuth();
@@ -230,6 +250,28 @@ ipcMain.handle('spotify:next', async () => {
 ipcMain.handle('spotify:previous', async () => {
   return await spotifyTools.previous();
 });
+
+// Pinterest Integration IPC Handlers
+ipcMain.handle('pinterest:start-oauth', async () => {
+  return await pinterestTools.startPinterestOAuth();
+});
+
+ipcMain.handle('pinterest:get-status', async () => {
+  return await pinterestTools.getConnectionStatus();
+});
+
+ipcMain.handle('pinterest:disconnect', async () => {
+  return authVault.removeToken('pinterest_tokens');
+});
+
+ipcMain.handle('pinterest:get-boards', async () => {
+  return await pinterestTools.getPinterestBoards();
+});
+
+ipcMain.handle('pinterest:get-pins', async (event, boardId) => {
+  return await pinterestTools.getPinterestPins(boardId);
+});
+
 
 
 // AI API Key Test IPC Handler

@@ -1,175 +1,639 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGamification } from '../context/GamificationContext';
 import { useProjects } from '../context/ProjectsContext';
-import { Sparkles, CheckCircle2, Circle, Plus, Trash2, Zap, ArrowUpRight } from 'lucide-react';
+import {
+  CheckCircle2,
+  Circle,
+  Plus,
+  Trash2,
+  ArrowUpRight,
+  HardDrive,
+  ExternalLink,
+  StickyNote as StickyNoteIcon,
+} from 'lucide-react';
+import StickyNote from './StickyNote';
+import { useStickyNotes } from '../hooks/useStickyNotes';
 
-export default function TodayView() {
-  const { userName, level, streak } = useGamification();
-  const { tasks, addTask, toggleTask, deleteTask, projects, setActiveProject, projectNicknames } = useProjects();
-  const [newTodayTask, setNewTodayTask] = useState('');
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
+function formatTodayDate() {
+  return new Intl.DateTimeFormat('it-IT', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date());
+}
+
+// ── Glassmorphism card style ──────────────────────────────────────────────────
+
+const glassCard = {
+  background: 'rgba(43, 28, 71, 0.65)',
+  backdropFilter: 'blur(14px)',
+  WebkitBackdropFilter: 'blur(14px)',
+  border: '1px solid rgba(157, 133, 198, 0.22)',
+  borderRadius: 22,
+  padding: '24px 26px',
+};
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function TodayHeader({ userName, level, xpInCurrentLevel, xpNeededForNext, levelProgress }) {
+  const dateStr = formatTodayDate();
+  // Capitalise first letter
+  const dateFmt = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+  return (
+    <div className="flex items-end justify-between gap-4 flex-wrap">
+      {/* Date + greeting */}
+      <div>
+        <p
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'rgba(157,133,198,0.7)',
+            marginBottom: 2,
+          }}
+        >
+          {dateFmt}
+        </p>
+        <h1
+          style={{
+            fontFamily: 'inherit',
+            fontSize: 28,
+            fontWeight: 900,
+            color: '#fff',
+            margin: 0,
+            lineHeight: 1.15,
+          }}
+        >
+          Bentornato{userName ? `, ${userName}` : ''}!
+        </h1>
+        <span className="inline-block mt-2 px-3 py-1 bg-[#E8D19E]/20 text-[#E8D19E] border border-[#E8D19E]/40 rounded-full font-mono text-[11px] font-bold">
+          Google Workspace Hub Attivo
+        </span>
+      </div>
+
+      {/* XP bar compact */}
+      <div style={{ minWidth: 200 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: 5,
+            fontSize: 11,
+            fontFamily: "'JetBrains Mono', monospace",
+            fontWeight: 700,
+          }}
+        >
+          <span style={{ color: '#E8D19E' }}>Livello {level}</span>
+          <span style={{ color: 'rgba(232,209,158,0.55)' }}>
+            {xpInCurrentLevel} / {xpNeededForNext} XP
+          </span>
+        </div>
+        <div
+          style={{
+            height: 6,
+            borderRadius: 99,
+            background: 'rgba(157,133,198,0.18)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              width: `${levelProgress}%`,
+              borderRadius: 99,
+              background: 'linear-gradient(90deg, #9D85C6, #E8D19E)',
+              transition: 'width 0.6s ease',
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TodayTaskPanel({ tasks, addTask, toggleTask, deleteTask }) {
+  const [newTask, setNewTask] = useState('');
   const todayTasks = tasks.filter((t) => !t.projectId || t.projectId === 'today');
-  const activeProjectsCount = projects.length;
+  const completed = todayTasks.filter((t) => t.completed).length;
+  const total = todayTasks.length;
 
-  const handleAddTodayTask = (e) => {
+  const handleAdd = (e) => {
     e.preventDefault();
-    if (!newTodayTask.trim()) return;
-    addTask('today', newTodayTask.trim(), 'high');
-    setNewTodayTask('');
+    if (!newTask.trim()) return;
+    addTask('today', newTask.trim(), 'high');
+    setNewTask('');
   };
 
   return (
-    <div className="projects-canvas-container select-none">
-      {/* Welcome Banner Card in Sidebar Purple #6B5887 */}
-      <div className="dashboard-card bg-[#6B5887] text-white mb-10 relative overflow-hidden flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-6 z-10">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-3xl bg-white/20 p-1 border border-white/30 shadow-lg">
-              <img
-                src="/ntp_snail.png"
-                alt="epicSnail"
-                className="w-full h-full object-contain animate-snail filter drop-shadow-xl"
-              />
-            </div>
-            <div className="absolute -bottom-2 -right-2 bg-amber-300 text-amber-950 font-black text-xs px-2.5 py-0.5 rounded-full border border-amber-950 shadow">
-              {streak}d
-            </div>
-          </div>
-
-          <div>
-            <h1 className="font-heading font-black text-3xl text-white flex items-center gap-3">
-              Bentornato, {userName || 'Avventuriero'}
-            </h1>
-            <p className="text-sm font-medium text-white/80 mt-1">
-              epicSnail è pronta per la tua sessione di lavoro.
-            </p>
-          </div>
-        </div>
-
-        {/* Stats Pills */}
-        <div className="flex items-center gap-4 z-10">
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/20 flex items-center gap-3 shadow-md">
-            <Zap className="w-6 h-6 text-amber-300 fill-amber-300 animate-pulse" />
-            <div>
-              <span className="text-[11px] text-white/60 font-mono font-bold uppercase block">Livello</span>
-              <span className="text-lg font-black text-white">{level}</span>
-            </div>
-          </div>
-
-          <div className="bg-black/30 p-4 rounded-2xl border border-white/20 flex items-center gap-3 shadow-md">
-            <Sparkles className="w-6 h-6 text-[#A5C4DC]" />
-            <div>
-              <span className="text-[11px] text-white/60 font-mono font-bold uppercase block">Progetti</span>
-              <span className="text-lg font-black text-white">{activeProjectsCount}</span>
-            </div>
-          </div>
-        </div>
+    <div style={glassCard} className="flex flex-col gap-5 overflow-hidden">
+      {/* Panel header */}
+      <div className="flex items-center justify-between">
+        <h2
+          style={{
+            fontSize: 15,
+            fontWeight: 900,
+            color: '#E8D19E',
+            fontFamily: "'JetBrains Mono', monospace",
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            margin: 0,
+          }}
+        >
+          Focus di Oggi
+        </h2>
+        {total > 0 && (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: 'rgba(232,209,158,0.55)',
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+          >
+            {completed}/{total} completati
+          </span>
+        )}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Today Tasks (2 cols) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <div className="dashboard-card theme-sand p-7">
-            <h2 className="font-heading font-black text-2xl text-[#3b2c0f] mb-6 flex items-center gap-3">
-              <CheckCircle2 className="w-6 h-6 text-amber-800" />
-              Focus di Oggi
-            </h2>
-
-            {/* Quick Add Form */}
-            <form onSubmit={handleAddTodayTask} className="flex gap-3 mb-6">
-              <input
-                type="text"
-                placeholder="Aggiungi una priorità per oggi..."
-                value={newTodayTask}
-                onChange={(e) => setNewTodayTask(e.target.value)}
-                className="flex-1 bg-white/80 border-amber-900/30 text-amber-950 text-sm font-semibold rounded-2xl px-5 py-3 placeholder-amber-900/50"
-              />
-              <button
-                type="submit"
-                className="action-pill bg-[#3b2c0f] text-white hover:bg-black"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Aggiungi</span>
-              </button>
-            </form>
-
-            {/* Task list */}
-            <div className="flex flex-col gap-3">
-              {todayTasks.length === 0 ? (
-                <p className="text-xs text-amber-900/70 font-bold text-center py-8">
-                  Tutti i task di oggi sono stati completati! 🎉
-                </p>
-              ) : (
-                todayTasks.map((t) => (
-                  <div
-                    key={t.id}
-                    className="flex items-center justify-between p-4 rounded-2xl bg-white/60 border border-amber-900/15 group transition-all"
-                  >
-                    <div
-                      onClick={() => toggleTask(t.id)}
-                      className="flex items-center gap-3 cursor-pointer flex-1"
-                    >
-                      {t.completed ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-amber-900/40 shrink-0" />
-                      )}
-                      <span
-                        className={`text-sm font-bold ${
-                          t.completed ? 'line-through text-amber-900/40' : 'text-amber-950'
-                        }`}
-                      >
-                        {t.title}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => deleteTask(t.id)}
-                      className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-amber-900/50 hover:text-rose-700 transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+      {/* Progress bar (only if tasks exist) */}
+      {total > 0 && (
+        <div
+          style={{
+            height: 4,
+            borderRadius: 99,
+            background: 'rgba(157,133,198,0.15)',
+            overflow: 'hidden',
+            marginTop: -10,
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              width: total > 0 ? `${(completed / total) * 100}%` : '0%',
+              borderRadius: 99,
+              background: 'linear-gradient(90deg, #98A78A, #E8D19E)',
+              transition: 'width 0.4s ease',
+            }}
+          />
         </div>
+      )}
 
-        {/* Right Column: Recent Projects Shortcut */}
-        <div className="flex flex-col gap-6">
-          <div className="dashboard-card theme-blue p-7">
-            <h2 className="font-heading font-black text-xl text-[#0f273b] mb-6">
-              Progetti Recenti
-            </h2>
+      {/* Quick add */}
+      <form onSubmit={handleAdd} style={{ display: 'flex', gap: 10 }}>
+        <input
+          type="text"
+          placeholder="Aggiungi una priorità per oggi..."
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          style={{
+            flex: 1,
+            background: 'rgba(30, 19, 51, 0.7)',
+            border: '1px solid rgba(157,133,198,0.2)',
+            borderRadius: 12,
+            padding: '9px 14px',
+            color: '#fff',
+            fontSize: 13,
+            fontWeight: 600,
+            outline: 'none',
+            fontFamily: 'inherit',
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            background: 'rgba(157,133,198,0.25)',
+            border: '1px solid rgba(157,133,198,0.35)',
+            borderRadius: 12,
+            padding: '9px 16px',
+            color: '#E8D19E',
+            fontWeight: 800,
+            fontSize: 13,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'background 0.2s',
+            whiteSpace: 'nowrap',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(157,133,198,0.4)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(157,133,198,0.25)')}
+        >
+          <Plus size={15} strokeWidth={3} />
+          Aggiungi
+        </button>
+      </form>
 
-            <div className="flex flex-col gap-3">
-              {projects.slice(0, 5).map((p) => {
-                const displayName = projectNicknames[p.id] || p.name;
-                return (
-                  <div
-                    key={p.id}
-                    onClick={() => setActiveProject(p)}
-                    className="p-4 rounded-2xl bg-white/50 hover:bg-white/80 border border-black/10 cursor-pointer flex items-center justify-between group transition-all shadow-sm"
-                  >
-                    <div className="truncate max-w-[160px]">
-                      <span className="text-xs font-black text-[#0f273b] block truncate">
-                        {displayName}
-                      </span>
-                      <span className="text-[11px] text-[#0f273b]/70 font-mono block">
+      {/* Task list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto' }}>
+        {todayTasks.length === 0 ? (
+          <p
+            style={{
+              textAlign: 'center',
+              color: 'rgba(157,133,198,0.5)',
+              fontSize: 13,
+              fontWeight: 600,
+              padding: '24px 0',
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+          >
+            Nessun task ancora — aggiungine uno sopra!
+          </p>
+        ) : (
+          todayTasks.map((t) => (
+            <div
+              key={t.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 14px',
+                borderRadius: 13,
+                background: t.completed
+                  ? 'rgba(152, 167, 138, 0.12)'
+                  : 'rgba(30, 19, 51, 0.5)',
+                border: '1px solid rgba(157,133,198,0.12)',
+                transition: 'background 0.2s',
+                gap: 10,
+              }}
+              className="group"
+            >
+              <div
+                onClick={() => toggleTask(t.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  cursor: 'pointer',
+                  flex: 1,
+                  overflow: 'hidden',
+                }}
+              >
+                {t.completed ? (
+                  <CheckCircle2 size={18} style={{ color: '#98A78A', flexShrink: 0 }} />
+                ) : (
+                  <Circle size={18} style={{ color: 'rgba(157,133,198,0.4)', flexShrink: 0 }} />
+                )}
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: t.completed ? 'rgba(255,255,255,0.3)' : '#fff',
+                    textDecoration: t.completed ? 'line-through' : 'none',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    transition: 'color 0.2s',
+                  }}
+                >
+                  {t.title}
+                </span>
+              </div>
+
+              <button
+                onClick={() => deleteTask(t.id)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(143,90,90,0)',
+                  cursor: 'pointer',
+                  padding: 4,
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'color 0.2s',
+                  flexShrink: 0,
+                }}
+                className="group-hover:!text-[#8F5A5A]"
+              >
+                <Trash2 size={14} strokeWidth={2} />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TodayProjectsPanel({ projects, projectNicknames, setActiveProject, driveFiles }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      {/* Projects card */}
+      <div style={glassCard}>
+        <h2
+          style={{
+            fontSize: 13,
+            fontWeight: 900,
+            color: '#A5C4DC',
+            fontFamily: "'JetBrains Mono', monospace",
+            letterSpacing: '0.07em',
+            textTransform: 'uppercase',
+            marginBottom: 14,
+          }}
+        >
+          Progetti Recenti
+        </h2>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {projects.length === 0 ? (
+            <p
+              style={{
+                color: 'rgba(165,196,220,0.4)',
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+            >
+              Nessun progetto aperto.
+            </p>
+          ) : (
+            projects.slice(0, 4).map((p) => {
+              const displayName = projectNicknames[p.id] || p.name;
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => setActiveProject(p)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '9px 12px',
+                    borderRadius: 12,
+                    background: 'rgba(30, 19, 51, 0.5)',
+                    border: '1px solid rgba(165,196,220,0.12)',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    gap: 8,
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = 'rgba(165,196,220,0.1)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = 'rgba(30, 19, 51, 0.5)')
+                  }
+                >
+                  <div style={{ overflow: 'hidden', flex: 1 }}>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 800,
+                        color: '#fff',
+                        display: 'block',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {displayName}
+                    </span>
+                    {p.branch && (
+                      <span
+                        style={{
+                          fontSize: 10,
+                          color: 'rgba(165,196,220,0.55)',
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontWeight: 600,
+                        }}
+                      >
                         {p.branch}
                       </span>
-                    </div>
-
-                    <ArrowUpRight className="w-4 h-4 text-[#0f273b]/60 group-hover:text-black transition-colors" />
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                  <ArrowUpRight size={14} style={{ color: 'rgba(165,196,220,0.5)', flexShrink: 0 }} />
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
+
+      {/* Google Drive card — conditional */}
+      {driveFiles.length > 0 && (
+        <div style={glassCard}>
+          <h2
+            style={{
+              fontSize: 13,
+              fontWeight: 900,
+              color: '#A5C4DC',
+              fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: '0.07em',
+              textTransform: 'uppercase',
+              marginBottom: 14,
+            }}
+          >
+            Drive Recenti
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {driveFiles.map((f) => (
+              <a
+                key={f.id}
+                href={f.webViewLink}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 11px',
+                  borderRadius: 11,
+                  background: 'rgba(30,19,51,0.5)',
+                  border: '1px solid rgba(165,196,220,0.1)',
+                  textDecoration: 'none',
+                  transition: 'background 0.2s',
+                  gap: 8,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = 'rgba(165,196,220,0.08)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = 'rgba(30,19,51,0.5)')
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+                  {f.iconLink ? (
+                    <img src={f.iconLink} alt="" style={{ width: 14, height: 14, flexShrink: 0 }} />
+                  ) : (
+                    <HardDrive size={13} style={{ color: '#A5C4DC', flexShrink: 0 }} />
+                  )}
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {f.name}
+                  </span>
+                </div>
+                <ExternalLink size={11} style={{ color: 'rgba(165,196,220,0.5)', flexShrink: 0 }} />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main TodayView ────────────────────────────────────────────────────────────
+
+export default function TodayView() {
+  const { userName, level, xpInCurrentLevel, xpNeededForNext, levelProgress } =
+    useGamification();
+  const { tasks, addTask, toggleTask, deleteTask, projects, setActiveProject, projectNicknames } =
+    useProjects();
+  const { notes, addNote, updateNote, deleteNote } = useStickyNotes();
+  const [driveFiles, setDriveFiles] = useState([]);
+
+  useEffect(() => {
+    if (window.electronAPI) {
+      window.electronAPI.getGoogleDriveFiles(6).then((res) => {
+        if (res && res.success) setDriveFiles(res.files || []);
+      });
+    }
+  }, []);
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      {/* ── Layer 0: Canvas background ─────────────────────────────── */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(145deg, #1e1333 0%, #2a1545 60%, #1a0f2e 100%)',
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── Layer 1: Ambient background glow ───────────────────────── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          bottom: -50,
+          right: -50,
+          width: 500,
+          height: 500,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(122,63,103,0.15) 0%, rgba(107,88,135,0.08) 50%, transparent 70%)',
+          filter: 'blur(40px)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      {/* ── Layer 2: Content ───────────────────────────────────────── */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '28px 32px 24px',
+          gap: 22,
+          overflowY: 'auto',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Header */}
+        <TodayHeader
+          userName={userName}
+          level={level}
+          xpInCurrentLevel={xpInCurrentLevel}
+          xpNeededForNext={xpNeededForNext}
+          levelProgress={levelProgress}
+        />
+
+        {/* Main grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '2fr 1fr',
+            gap: 20,
+            flex: 1,
+            minHeight: 0,
+          }}
+        >
+          <TodayTaskPanel
+            tasks={tasks}
+            addTask={addTask}
+            toggleTask={toggleTask}
+            deleteTask={deleteTask}
+          />
+          <TodayProjectsPanel
+            projects={projects}
+            projectNicknames={projectNicknames}
+            setActiveProject={setActiveProject}
+            driveFiles={driveFiles}
+          />
+        </div>
+      </div>
+
+      {/* ── Layer 3: Floating sticky notes ────────────────────────── */}
+      {notes.map((note) => (
+        <StickyNote
+          key={note.id}
+          {...note}
+          onUpdate={updateNote}
+          onDelete={deleteNote}
+        />
+      ))}
+
+      {/* ── Layer 4: Add sticky note button ───────────────────────── */}
+      <button
+        onClick={addNote}
+        title="Aggiungi sticky note"
+        style={{
+          position: 'absolute',
+          bottom: 28,
+          left: 28,
+          zIndex: 30,
+          background: 'rgba(232, 209, 158, 0.18)',
+          border: '1px solid rgba(232, 209, 158, 0.35)',
+          borderRadius: 14,
+          padding: '9px 16px',
+          color: '#E8D19E',
+          fontWeight: 800,
+          fontSize: 12,
+          fontFamily: "'JetBrains Mono', monospace",
+          letterSpacing: '0.05em',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          backdropFilter: 'blur(8px)',
+          transition: 'background 0.2s, transform 0.15s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(232, 209, 158, 0.3)';
+          e.currentTarget.style.transform = 'scale(1.04)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(232, 209, 158, 0.18)';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        <StickyNoteIcon size={14} strokeWidth={2.5} />
+        Sticky Note
+      </button>
     </div>
   );
 }

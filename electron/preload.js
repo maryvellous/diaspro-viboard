@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openAndroidStudio: (folderPath) => ipcRenderer.invoke('system:open-studio', folderPath),
   openAntigravityIDE: (folderPath) => ipcRenderer.invoke('system:open-antigravity', folderPath),
   openInExplorer: (folderPath) => ipcRenderer.invoke('system:open-explorer', folderPath),
+  openExternal: (url) => ipcRenderer.invoke('system:open-external', url),
 
   // Storage
   getStoreData: () => ipcRenderer.invoke('store:get-all'),
@@ -39,6 +40,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getGoogleCalendarEvents: (maxResults) => ipcRenderer.invoke('google:get-events', maxResults),
   createGoogleCalendarEvent: (eventData) => ipcRenderer.invoke('google:create-event', eventData),
   getGoogleTasks: () => ipcRenderer.invoke('google:get-tasks'),
+  toggleGoogleTask: (taskId, completed) => ipcRenderer.invoke('google:toggle-task', { taskId, completed }),
+  createGoogleTask: (title, due) => ipcRenderer.invoke('google:create-task', { title, due }),
+  getGoogleDriveFiles: (pageSize) => ipcRenderer.invoke('google:get-drive-files', pageSize),
+
 
   // Spotify Integration
   startSpotifyOAuth: () => ipcRenderer.invoke('spotify:start-oauth'),
@@ -49,6 +54,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   spotifyPause: () => ipcRenderer.invoke('spotify:pause'),
   spotifyNext: () => ipcRenderer.invoke('spotify:next'),
   spotifyPrevious: () => ipcRenderer.invoke('spotify:previous'),
+
+  // Pinterest Integration
+  startPinterestOAuth: () => ipcRenderer.invoke('pinterest:start-oauth'),
+  getPinterestStatus: () => ipcRenderer.invoke('pinterest:get-status'),
+  disconnectPinterest: () => ipcRenderer.invoke('pinterest:disconnect'),
+  getPinterestBoards: () => ipcRenderer.invoke('pinterest:get-boards'),
+  getPinterestPins: (boardId) => ipcRenderer.invoke('pinterest:get-pins', boardId),
+
 
   // Chat & Context Integration
   sendChatMessage: (data) => ipcRenderer.invoke('api:chat-message', data),

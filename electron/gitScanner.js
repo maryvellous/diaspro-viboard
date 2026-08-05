@@ -80,20 +80,34 @@ async function getGitProjectDetails(folderPath) {
     const status = await git.status();
     const branch = status.current || 'detached';
     const log = await git.log({ maxCount: 5 }).catch(() => ({ all: [] }));
+    const remotes = await git.getRemotes(true).catch(() => []);
+    const originRemote = remotes.find(r => r.name === 'origin') || remotes[0];
+    const remoteUrl = originRemote && originRemote.refs ? (originRemote.refs.fetch || originRemote.refs.push || null) : null;
 
     const projectName = path.basename(folderPath);
+
+    let lastFileModified = null;
+    try {
+      const gitIndexPath = path.join(folderPath, '.git', 'index');
+      const stat = await fs.stat(gitIndexPath);
+      lastFileModified = stat.mtime.toISOString();
+    } catch (e) {
+      // ignore
+    }
 
     return {
       id: Buffer.from(folderPath).toString('base64'),
       name: projectName,
       path: folderPath,
       branch: branch,
+      remoteUrl: remoteUrl,
       behind: status.behind,
       ahead: status.ahead,
       clean: status.isClean(),
       modified: status.modified.length,
       staged: status.staged.length,
       not_added: status.not_added.length,
+      lastFileModified: lastFileModified,
       lastCommit: log.all.length > 0 ? {
         hash: log.all[0].hash.substring(0, 7),
         message: log.all[0].message,

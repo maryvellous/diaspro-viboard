@@ -1,104 +1,159 @@
-# 🐌 EpicSnail - Gamified Desktop Dashboard
+<p align="center">
+  <img src="public/banner.svg" alt="Diaspro Viboard — Vibe & Gamified Desktop Dashboard" width="900"/>
+</p>
 
-![Electron](https://img.shields.io/badge/Electron-34.3-47848F?style=for-the-badge&logo=electron&logoColor=white)
-![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-
-**EpicSnail** è una dashboard desktop moderna, elegante e gamificata sviluppata in **Electron**, **React** e **Vite**. È progettata per gestire in modo fluido i propri progetti locali, integrando la lettura dello stato Git, la gestione rapida di task mediante Post-it fluttuanti ed un design system altamente rifinito con micro-animazioni.
-
----
-
-## ✨ Caratteristiche Principali
-
-- 🚀 **Gestione Progetti & Canvas Grid**:
-  - Schede grafiche curate per ciascun progetto locale.
-  - Ampio respiro visivo (*canvas outer margins*) per uno sfondo rilassante ed un'interfaccia priva di disordine.
-- 📌 **Post-it Fluttuanti (Sticky Overlay)**:
-  - Badge sticker `📌 1 Task` elegante sulle card dei progetti.
-  - Foglietti adesivi fluttuanti sovrapposti in modal/overlay con ombre 3D, espandibili e chiudibili senza deformare la griglia.
-- 🌿 **Integrazione Git in Tempo Reale**:
-  - Rilevamento automatico del branch attivo (`main`, `dev`, ecc.).
-  - Indicatore di modifiche locali (`Clean`, `x modificati`) e del messaggio dell'ultimo commit.
-- 🎨 **Design System & Micro-Interazioni**:
-  - Badge e pillole dinamicamente proporzionati (`font-size`, `padding`, `border-radius`).
-  - Effetti celebrativi con confetti ed animazioni fluide al completamento dei task.
-  - Palette cromatica scura ad alto contrasto con vetrofrassino e sfumature moderne.
+<p align="center">
+  <img src="https://img.shields.io/badge/Electron-34.3-47848F?style=for-the-badge&logo=electron&logoColor=white" alt="Electron"/>
+  <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS"/>
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
+</p>
 
 ---
 
-## 🛠️ Tech Stack
+## What is Diaspro Viboard?
 
-| Tecnologia | Ruolo |
-| :--- | :--- |
-| **Electron** (`^34.3.0`) | Framework per applicazione desktop cross-platform |
-| **React** (`^19.0.0`) | UI Library per la costruzione di componenti reattivi |
-| **Vite** (`^6.2.0`) | Bundler rapido e dev server HMR |
-| **Tailwind CSS** (`^4.3.3`) | Styling utility-first moderno |
-| **Lucide React** (`^0.479.0`) | Set di icone vettoriali |
-| **Simple Git** (`^3.27.0`) | Client Git per la lettura dello stato delle repository |
-| **Canvas Confetti** (`^1.9.4`) | Effetti grafici e festeggiamenti |
+**Diaspro Viboard** è il **Desktop Productivity Hub Gamificato** di nuova generazione per sviluppatori e creator. Combina la gestione dei progetti locali, la sincronizzazione profonda con **Google Workspace**, un assistente **IA Multi-Provider (Diaspro AI)** contestuale, integrazioni multimediali (**Spotify, Pinterest, GitHub**) e un sistema di **Gamificazione CodeQuest** in un'unica interfaccia elegante in Dark Mode.
+
+Costruito sulle fondamenta di **Electron 34**, **React 19**, **Vite 6** e **Tailwind CSS 4**, Diaspro Viboard offre un'esperienza utente reattiva, fluida e ad altissima resa estetica.
 
 ---
 
-## 🚀 Guida all'Installazione ed Avvio
+## Key Features
 
-### Requisiti Prerequisiti
+### 🔹 Google Workspace Master Hub
+- **Login 1-Click Google OAuth**: Identità master sincronizzata con avatar, profilo e permessi trasparenti.
+- **Google Tasks & Calendar Sync**: Visualizzazione dei task quotidiani e degli eventi in vista *Oggi* e nel *Calendario*, con spunta e aggiornamento in tempo reale.
+- **Google Drive & Docs Preview**: Accesso istantaneo ai documenti di lavoro all'interno delle schede di progetto.
 
-- [Node.js](https://nodejs.org/) (versione `18.x` o superiore consigliata)
-- [npm](https://www.npmjs.com/) o `pnpm` / `yarn`
-- [Git](https://git-scm.com/) installato nel sistema
+### 🤖 Diaspro AI — Multi-Provider Assistant
+- **Supporto LLM Universale**: Collega in totale sicurezza Google Gemini, Anthropic Claude, OpenAI, DeepSeek o modelli locali via Ollama.
+- **Context-Aware Assistance**: Diaspro AI legge in automatico gli eventi a calendario e i task quotidiani per rispondere in modo mirato alle priorità della giornata.
+- **Secure Key Vault**: Gestione cifrata e locale delle chiavi API.
 
-### 1. Clonare il Repository
+### 🎮 Gamification & CodeQuest
+- **Sistema XP & Level Up**: Guadagna punti esperienza completando task, pushando commit ed eseguendo sessioni di lavoro.
+- **CodeQuest Puzzle & Challenge**: Sfide di programmazione ed enigmi interattivi integrati per allenare la logica dev.
+- **XP Pop Notification**: Reazioni visive ed effetti dinamici al raggiungimento dei milestone.
 
-```bash
-git clone https://github.com/TUO-USERNAME/epicsnail.git
-cd epicsnail
-```
+### 🎵 Media & Dev Integration Hub
+- **GitHub Smart Deduplication**: Sync automatico delle repository Git locali con le corrispondenti remote GitHub, rilevamento branch attivo, ultimo commit e modifiche pendenti.
+- **Spotify Smart Player**: Controllo riproduzione e playlist di sottofondo per le sessioni di deep work.
+- **Pinterest Moodboard Grid**: Griglia visiva per bacheche e ispirazioni di design all'interno dei dettagli progetto.
+- **Floating Sticky Notes**: Foglietti adesivi in overlay 3D espandibili e trascinabili per appunti al volo.
 
-### 2. Installare le Dipendenze
+### 🎨 Aesthetic & Design System Vibe
+- **Curated Dark Palette**: Canvas scuro (`#1e1333`), card tridimensionali (`#2b1c47`) e toni accento armoniosi (Lavender, Warm Sand, Sage, Blue Accent).
+- **Strict Zero-Emoji UI**: Iconografia raffinata ed omogenea basata esclusivamente sui componenti vettoriali `AestheticIcons` e `BrandIcons`.
+- **Global Command Palette**: Ricerca rapida globale via modale istantanea.
 
-```bash
-npm install
-```
+---
 
-### 3. Avviare in Ambiente di Sviluppo
+## Architecture Overview
 
-Il comando avvia sia il dev server Vite sia la finestra dell'applicazione Electron con Hot Reload (HMR):
-
-```bash
-npm run dev
-```
-
-### 4. Compilazione per la Produzione
-
-Per compilare gli asset della UI per la produzione:
-
-```bash
-npm run build
+```mermaid
+graph TD
+    A[Electron Main Process] -->|IPC Secure Bridge| B[Preload Script / Context Isolation]
+    B -->|Exposed APIs| C[React 19 Renderer]
+    
+    subgraph Renderer Process
+        C --> D[Google Workspace Service]
+        C --> E[Diaspro AI Engine]
+        C --> F[CodeQuest Gamification System]
+        C --> G[Git & Project Manager]
+        C --> H[Media Hub: Spotify / Pinterest]
+    end
+    
+    subgraph External APIs & Services
+        D -->|OAuth 2.0| Google[Google Cloud APIs]
+        E -->|API Keys / Local| AI[Gemini / Claude / OpenAI / Ollama]
+        G -->|Simple Git| LocalGit[Local File System & GitHub]
+        H -->|Web Playback / SDK| Spotify[Spotify & Pinterest APIs]
+    end
 ```
 
 ---
 
-## 📁 Struttura del Progetto
+## Tech Stack
+
+| Categoria | Tecnologia | Versione | Descrizione |
+| :--- | :--- | :--- | :--- |
+| **Desktop Core** | **Electron** | `^34.3.0` | Framework desktop multipiattaforma con isolamento di contesto e IPC sicuro |
+| **UI Framework** | **React** | `^19.0.0` | Frontend reattivo basato su componenti e custom hooks |
+| **Build Tool** | **Vite** | `^6.2.0` | Dev server ultra-veloce ed HMR istantaneo |
+| **Styling** | **Tailwind CSS** | `^4.3.3` | Engine grafico utility-first con custom design tokens |
+| **Icons & Assets** | **Lucide & Custom SVG** | `^0.479.0` | Set icone vettoriali `AestheticIcons` e `BrandIcons` |
+| **Git Integration** | **Simple Git** | `^3.27.0` | Rilevamento dello stato del repository in locale |
+| **Effects** | **Canvas Confetti** | `^1.9.4` | Effetti grafici per notifiche di Level Up |
+
+---
+
+## Getting Started
+
+### Prerequisiti
+- **Node.js** v18+ e **npm** v9+
+- Client Git installato sul sistema
+
+### Installazione ed Avvio Locale
+
+1. **Clona la repository**:
+   ```bash
+   git clone https://github.com/maryvellous/diaspro-viboard.git
+   cd diaspro-viboard
+   ```
+
+2. **Installa le dipendenze**:
+   ```bash
+   npm install
+   ```
+
+3. **Avvia l'ambiente di sviluppo**:
+   ```bash
+   npm run dev
+   ```
+   *Questo script avvia simultaneamente il dev server di Vite ed il processo Electron.*
+
+4. **Compilazione dell'eseguibile Windows**:
+   ```bash
+   npm run dist
+   ```
+   *L'installer `.exe` e la versione Portable saranno generati all'interno della cartella `dist-exe/`.*
+
+---
+
+## Project Structure
 
 ```text
-.
-├── electron/          # Main process di Electron (main.js, preload, IPC)
-├── src/               # Renderer process React
-│   ├── components/    # Componenti UI (ProjectCard, StickyNote, Header, Badge, ecc.)
-│   ├── index.css      # Stili globali e configurazione Tailwind CSS
-│   └── App.jsx        # Componente principale
-├── public/            # Asset statici ed icone
-├── index.html         # Template HTML entry point
-├── package.json       # Configurazione dipendenze e script
-├── vite.config.mjs    # Configurazione Vite
-└── README.md          # Documentazione del progetto
+diaspro-viboard/
+├── electron/                 # Processo Main Electron (main.js, IPC handlers, OAuth callback)
+├── src/                      # Processo Renderer React
+│   ├── assets/               # Asset grafici ed icone SVG
+│   ├── components/           # Componenti UI (TodayView, ProjectsView, ChatPanel, CodeQuestView, ecc.)
+│   ├── constants/            # Costanti di sistema e configurazioni
+│   ├── context/              # Context Provider (Auth, Workspace, App State)
+│   ├── data/                 # Data Layer e Mock Data per fallback
+│   ├── hooks/                # Custom React Hooks
+│   ├── utils/                # Helper e funzioni di utilità
+│   ├── App.jsx               # Componente Root dell'applicazione
+│   ├── index.css             # Design Tokens & Tailwind CSS Imports
+│   └── main.jsx              # Entry point React
+├── public/                   # Asset statici (banner.svg, icon.png, ecc.)
+├── ROADMAP_PRODUZIONE.md     # Roadmap ufficiale per la release pubblica e il portfolio
+├── package.json              # Dipendenze e script di build electron-builder
+└── vite.config.mjs           # Configurazione bundler Vite
 ```
 
 ---
 
-## 📄 Licenza
+## Roadmap
 
-Questo progetto è distribuito sotto licenza **MIT**. Consulta il file `LICENSE` per maggiori dettagli.
+Per consultare il piano di sviluppo aggiornato, la checklist pre-rilascio ed il percorso di preparazione della codebase a programma pubblico:
+
+👉 **[Consulta ROADMAP_PRODUZIONE.md](file:///c:/Users/Clark/Desktop/Cosciottina/Nuova%20cartella/ROADMAP_PRODUZIONE.md)**
+
+---
+
+## Licenza
+
+Questo progetto è rilasciato sotto licenza **MIT**. Consulta il file `LICENSE` per ulteriori informazioni.

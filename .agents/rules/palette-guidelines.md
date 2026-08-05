@@ -1,6 +1,6 @@
-# Rules for UI Design & Color Palette in epicSnail
+# Rules for UI Design & Color Palette in Diaspro Viboard
 
-Whenever creating or modifying React components or UI elements for epicSnail, you MUST strictly adhere to the official color palette and design system defined in `src/index.css`. NEVER use generic dark purples, blacks, or arbitrary Tailwind gradients outside of the official tokens.
+Whenever creating or modifying React components or UI elements for Diaspro Viboard, you MUST strictly adhere to the official color palette and design system defined in `src/index.css`. NEVER use generic dark purples, blacks, or arbitrary Tailwind gradients outside of the official tokens.
 
 ## Official Palette Tokens & Colors
 

@@ -5,6 +5,7 @@ node_modules/
 # Production & Build outputs
 dist/
 dist-electron/
+dist-exe/
 out/
 build/
 *.vsix
@@ -18,7 +19,8 @@ aesteticvibe/
 .env.development.local
 .env.test.local
 .env.production.local
-epicSnail_store.json
+diaspro_store.json
+diaspro_vault.json
 *.db
 *.sqlite
 

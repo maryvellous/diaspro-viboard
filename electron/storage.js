@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 
 class LocalStore {
-  constructor(filename = 'epicSnail_store.json') {
+  constructor(filename = 'diaspro_store.json') {
     const userDataPath = app ? app.getPath('userData') : process.cwd();
     this.path = path.join(userDataPath, filename);
     this.data = this.parseDataFile(this.path);
@@ -27,7 +27,7 @@ class LocalStore {
         level: 1,
         streak: 1,
         lastActiveDate: new Date().toISOString().split('T')[0],
-        unlockedBadges: ['b1'], // 'b1': Welcome to epicSnail!
+        unlockedBadges: ['b1'], // 'b1': Welcome to Diaspro Viboard!
         aiProvider: 'gemini',
       },
       scanPaths: [
