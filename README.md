@@ -1,5 +1,3 @@
-
-
 <p align="center">
   <img src="public/banner.svg" alt="Diaspro Viboard — Vibe & Gamified Desktop Dashboard" width="900"/>
 </p>
@@ -19,6 +17,43 @@
 **Diaspro Viboard** è il **Desktop Productivity Hub Gamificato** di nuova generazione per sviluppatori e creator. Combina la gestione dei progetti locali, la sincronizzazione profonda con **Google Workspace**, un assistente **IA Multi-Provider (Diaspro AI)** contestuale, integrazioni multimediali (**Spotify, Pinterest, GitHub**) e un sistema di **Gamificazione CodeQuest** in un'unica interfaccia elegante in Dark Mode.
 
 Costruito sulle fondamenta di **Electron 34**, **React 19**, **Vite 6** e **Tailwind CSS 4**, Diaspro Viboard offre un'esperienza utente reattiva, fluida e ad altissima resa estetica.
+
+---
+
+## Quick Start & Forking Guide
+
+Se desideri clonare, fare un fork o contribuire a **Diaspro Viboard**:
+
+### 1. Clonare la repository
+```bash
+git clone https://github.com/maryvellous/epicsnail.git
+cd epicsnail
+```
+
+### 2. Installare le dipendenze
+```bash
+npm install
+```
+
+### 3. Configurare le variabili d'ambiente (`.env`)
+Crea un file `.env` a partire dal template fornito:
+```bash
+cp .env.example .env
+```
+Apri il file `.env` ed inserisci il tuo **Google Client ID**:
+```env
+GOOGLE_CLIENT_ID=vostro_client_id.apps.googleusercontent.com
+```
+
+### 4. Avviare in ambiente di sviluppo
+```bash
+npm run dev
+```
+
+### 5. Creare il pacchetto ed il file eseguibile (.exe)
+```bash
+npm run dist
+```
 
 ---
 
@@ -73,3 +108,10 @@ graph TD
         G -->|Simple Git| LocalGit[Local File System & GitHub]
         H -->|Web Playback / SDK| Spotify[Spotify & Pinterest APIs]
     end
+```
+
+---
+
+## License
+
+Rilasciato sotto licenza [MIT License](LICENSE).
