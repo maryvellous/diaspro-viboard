@@ -24,7 +24,7 @@ class OAuthManager {
   // Start Google OAuth 2.0 PKCE Flow
   static async startGoogleOAuth({ clientId, clientSecret = '' }) {
     if (!clientId) {
-      return { success: false, error: 'Google Client ID non configurato. Inseriscilo nelle Impostazioni.' };
+      return { success: false, error: 'Per connettere l\'Account Google Master, inserisci la variabile GOOGLE_CLIENT_ID nel tuo file .env del progetto.' };
     }
 
     const { verifier, challenge } = this.generatePKCE();

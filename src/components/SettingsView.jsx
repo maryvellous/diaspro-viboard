@@ -234,14 +234,17 @@ export default function SettingsView() {
   };
 
   const handleSaveGoogleCredentials = async () => {
+    if (!googleClientId.trim()) {
+      setGoogleSaveStatus({ success: false, message: 'Google Client ID e un campo obbligatorio.' });
+      return;
+    }
     if (window.electronAPI) {
-      if (googleClientId.trim()) {
-        await window.electronAPI.saveToken('google_client_id', googleClientId.trim());
-      }
+      await window.electronAPI.saveToken('google_client_id', googleClientId.trim());
       if (googleClientSecret.trim()) {
         await window.electronAPI.saveToken('google_client_secret', googleClientSecret.trim());
       }
-      alert('Credenziali Google salvate cifrate nel Vault.');
+      setGoogleSaveStatus({ success: true, message: 'Credenziali Google salvate nel Vault cifrato!' });
+      setTimeout(() => setGoogleSaveStatus(null), 4000);
     }
   };
 
@@ -324,13 +327,21 @@ export default function SettingsView() {
                       <p className="text-xs font-mono text-[#E8D19E]">{googleStatus.userEmail || 'account@google.com'}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={handleStartGoogleOAuth}
-                    disabled={connectingGoogle}
-                    className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-mono font-bold text-[#E8D19E] border border-[#E8D19E]/30 transition-all"
-                  >
-                    {connectingGoogle ? 'Aggiornamento...' : 'Rinfresca Permessi'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleStartGoogleOAuth}
+                      disabled={connectingGoogle}
+                      className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-mono font-bold text-[#E8D19E] border border-[#E8D19E]/30 transition-all"
+                    >
+                      {connectingGoogle ? 'Aggiornamento...' : 'Rinfresca Permessi'}
+                    </button>
+                    <button
+                      onClick={handleDisconnectGoogle}
+                      className="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 text-rose-300 text-xs font-mono font-bold transition-all"
+                    >
+                      Disconnetti
+                    </button>
+                  </div>
                 </div>
 
                 {/* Workspace Services Grid */}
@@ -369,7 +380,7 @@ export default function SettingsView() {
                   className="action-pill bg-[#E8D19E] hover:bg-[#d6bc86] text-[#1e1333] font-bold shadow-lg"
                 >
                   <GoogleIcon className="w-5 h-5" />
-                  <span>Connetti Account Google Master</span>
+                  <span>{connectingGoogle ? 'Attendi Browser...' : 'Connetti Account Google Master'}</span>
                 </button>
               </div>
             )}
