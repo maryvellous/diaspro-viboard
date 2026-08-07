@@ -131,7 +131,7 @@ async function getGitProjectDetails(folderPath) {
 /**
  * Git actions
  */
-async function executeGitAction(folderPath, action) {
+async function executeGitAction(folderPath, action, options = {}) {
   try {
     const git = simpleGit(folderPath);
     if (action === 'fetch') {
@@ -140,6 +140,11 @@ async function executeGitAction(folderPath, action) {
       await git.pull();
     } else if (action === 'push') {
       await git.push();
+    } else if (action === 'commit') {
+      await git.add('.');
+      await git.commit(options.message || 'Update via Diaspro Viboard');
+    } else if (action === 'checkout') {
+      await git.checkout(options.branch);
     }
     return await getGitProjectDetails(folderPath);
   } catch (err) {

@@ -331,6 +331,10 @@ class SpotifyTools {
   async previous() {
     return this.sendPlayerCommand('previous', 'POST');
   }
+
+  async seek(positionMs) {
+    return this.sendPlayerCommand(`seek?position_ms=${Math.floor(positionMs)}`, 'PUT');
+  }
 }
 
 module.exports = SpotifyTools;

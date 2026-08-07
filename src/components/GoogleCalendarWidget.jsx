@@ -96,6 +96,25 @@ export default function GoogleCalendarWidget() {
     }
   };
 
+  const handleDeleteEvent = async (eventId) => {
+    if (window.electronAPI) {
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      await window.electronAPI.deleteGoogleCalendarEvent(eventId);
+    } else {
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+    }
+  };
+
+  const handlePostponeTask = async (taskId) => {
+    if (window.electronAPI) {
+      const res = await window.electronAPI.postponeGoogleTask(taskId);
+      if (res.success) {
+        addXp(5, 'Task posticipato a domani');
+        fetchGoogleData();
+      }
+    }
+  };
+
   const handleToggleTask = async (taskId, currentStatus) => {
     if (!window.electronAPI) return;
     const newCompleted = !currentStatus;

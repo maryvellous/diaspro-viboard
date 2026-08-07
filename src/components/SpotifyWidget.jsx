@@ -20,10 +20,13 @@ export default function SpotifyWidget() {
   const [connecting, setConnecting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [isFreeAccountNotice, setIsFreeAccountNotice] = useState(false);
+  const [isSeeking, setIsSeeking] = useState(false);
+  const [dragProgressMs, setDragProgressMs] = useState(0);
+
   const fetchPlayback = async () => {
     if (!window.electronAPI) return;
     setLoading(true);
-    setErrorMessage('');
 
     const st = await window.electronAPI.getSpotifyStatus();
     setStatusInfo(st);
@@ -33,17 +36,31 @@ export default function SpotifyWidget() {
       setLoading(false);
       if (res.success) {
         setPlayback(res.playback);
+        setIsFreeAccountNotice(false);
       } else {
-        setErrorMessage(res.error || 'Impossibile caricare la riproduzione Spotify');
+        if (res.error?.includes('403') || res.error?.includes('Premium')) {
+          setIsFreeAccountNotice(true);
+        } else {
+          setErrorMessage(res.error || 'Impossibile caricare la riproduzione Spotify');
+        }
       }
     } else {
       setLoading(false);
     }
   };
 
+  // Smart Adaptive Polling (1s when playing, 5s when paused)
   useEffect(() => {
     fetchPlayback();
-  }, []);
+    const intervalTime = playback?.isPlaying ? 1500 : 5000;
+    const timer = setInterval(() => {
+      if (statusInfo.status === 'connected' && !isSeeking) {
+        fetchPlayback();
+      }
+    }, intervalTime);
+
+    return () => clearInterval(timer);
+  }, [playback?.isPlaying, statusInfo.status, isSeeking]);
 
   const handleStartOAuth = async () => {
     if (!window.electronAPI) return;
@@ -69,30 +86,51 @@ export default function SpotifyWidget() {
 
   const handlePlay = async () => {
     if (!window.electronAPI) return;
+    setErrorMessage('');
     const res = await window.electronAPI.spotifyPlay();
-    if (res.success) setPlayback({ ...playback, isPlaying: true });
+    if (res.success) setPlayback(prev => prev ? ({ ...prev, isPlaying: true }) : null);
+    else if (res.error?.includes('Premium')) setIsFreeAccountNotice(true);
     else setErrorMessage(res.error || 'Impossibile avviare la riproduzione');
   };
 
   const handlePause = async () => {
     if (!window.electronAPI) return;
+    setErrorMessage('');
     const res = await window.electronAPI.spotifyPause();
-    if (res.success) setPlayback({ ...playback, isPlaying: false });
+    if (res.success) setPlayback(prev => prev ? ({ ...prev, isPlaying: false }) : null);
+    else if (res.error?.includes('Premium')) setIsFreeAccountNotice(true);
     else setErrorMessage(res.error || 'Impossibile mettere in pausa');
   };
 
   const handleNext = async () => {
     if (!window.electronAPI) return;
+    setErrorMessage('');
     const res = await window.electronAPI.spotifyNext();
-    if (res.success) setTimeout(fetchPlayback, 500);
+    if (res.success) setTimeout(fetchPlayback, 400);
+    else if (res.error?.includes('Premium')) setIsFreeAccountNotice(true);
     else setErrorMessage(res.error || 'Impossibile passare al brano successivo');
   };
 
   const handlePrevious = async () => {
     if (!window.electronAPI) return;
+    setErrorMessage('');
     const res = await window.electronAPI.spotifyPrevious();
-    if (res.success) setTimeout(fetchPlayback, 500);
+    if (res.success) setTimeout(fetchPlayback, 400);
+    else if (res.error?.includes('Premium')) setIsFreeAccountNotice(true);
     else setErrorMessage(res.error || 'Impossibile tornare al brano precedente');
+  };
+
+  const handleSeek = async (e) => {
+    if (!playback?.durationMs || !window.electronAPI) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const targetMs = Math.floor((clickX / rect.width) * playback.durationMs);
+    
+    setPlayback(prev => prev ? ({ ...prev, progressMs: targetMs }) : null);
+    const res = await window.electronAPI.spotifySeek(targetMs);
+    if (!res.success && res.error?.includes('Premium')) {
+      setIsFreeAccountNotice(true);
+    }
   };
 
   const isPlaying = playback?.isPlaying;
@@ -105,7 +143,16 @@ export default function SpotifyWidget() {
     }
   };
 
+  const formatMs = (ms) => {
+    if (!ms) return '0:00';
+    const totalSec = Math.floor(ms / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  };
+
   const isConnected = statusInfo.status === 'connected';
+  const progressPercent = playback?.durationMs ? Math.min(100, Math.max(0, ((playback.progressMs || 0) / playback.durationMs) * 100)) : 0;
 
   return (
     <div className="projects-canvas-container select-none overflow-y-auto">
@@ -140,6 +187,19 @@ export default function SpotifyWidget() {
 
           {/* Content */}
           <div className="relative z-10 flex flex-col h-full p-8 gap-6">
+
+            {/* Spotify Free Premium Warning Banner */}
+            {isFreeAccountNotice && (
+              <div className="bg-[#7A3F67]/80 border border-[#E8D19E]/40 p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs text-[#E8D19E]">
+                <span>Spotify Premium è richiesto per il controllo remoto diretto. Apri l'app Spotify per riprodurre la musica.</span>
+                <button
+                  onClick={() => window.electronAPI?.openExternal('spotify://')}
+                  className="px-3 py-1 bg-[#E8D19E] text-[#1e1333] font-bold rounded-xl shrink-0 hover:bg-white"
+                >
+                  Apri Spotify
+                </button>
+              </div>
+            )}
 
             {/* Album Art + Track Info */}
             <div className="flex flex-col sm:flex-row items-center gap-8 flex-1">
@@ -180,29 +240,40 @@ export default function SpotifyWidget() {
               </div>
             </div>
 
-            {/* Progress Bar (simulated) */}
-            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+            {/* Interactive Scrub / Progress Bar */}
+            <div className="flex flex-col gap-1.5">
               <div
-                className={`h-full bg-[#9D85C6] rounded-full transition-all ${isPlaying ? 'progress-bar-anim' : ''}`}
-                style={{ width: isPlaying ? undefined : '0%', animation: isPlaying ? 'progressbar 30s linear infinite' : 'none' }}
-              />
+                onClick={handleSeek}
+                className="w-full h-2 bg-white/10 hover:bg-white/20 rounded-full cursor-pointer overflow-hidden relative group transition-all"
+                title="Fai click per avanzare al punto desiderato"
+              >
+                <div
+                  className="h-full bg-gradient-to-r from-[#9D85C6] to-[#E8D19E] rounded-full transition-all duration-300 relative"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#A5C4DC]/80">
+                <span>{formatMs(playback?.progressMs)}</span>
+                <span>{formatMs(playback?.durationMs)}</span>
+              </div>
             </div>
 
-            {/* Audio Visualizer */}
+            {/* Audio Visualizer (Dynamic HSL frequencies) */}
             <div className="flex items-end justify-center gap-[3px] h-10">
-              {VIZ_COLORS.map((color, i) => (
-                <div
-                  key={i}
-                  className={`vizbar w-[4px]`}
-                  style={{
-                    background: color,
-                    height: 4,
-                    opacity: isPlaying ? 1 : 0.2,
-                    animationPlayState: isPlaying ? 'running' : 'paused',
-                    animationDelay: `${(i * 0.07).toFixed(2)}s`,
-                  }}
-                />
-              ))}
+              {VIZ_COLORS.map((color, i) => {
+                const dynamicHeight = isPlaying ? Math.floor(8 + Math.abs(Math.sin((Date.now() / 150) + i)) * 28) : 4;
+                return (
+                  <div
+                    key={i}
+                    className="vizbar w-[4px] rounded-full transition-all duration-150"
+                    style={{
+                      background: color,
+                      height: dynamicHeight,
+                      opacity: isPlaying ? 1 : 0.2,
+                    }}
+                  />
+                );
+              })}
             </div>
 
             {/* Controls */}
@@ -266,7 +337,7 @@ export default function SpotifyWidget() {
                   <p className="text-white text-sm font-semibold">{statusInfo.userName || 'Account Attivo'}</p>
                 </div>
                 <p className="text-[11px] leading-relaxed text-[#A5C4DC]">
-                  Controlla la riproduzione direttamente dalla dashboard. I dati si aggiornano ogni 10 secondi.
+                  Controlla la riproduzione direttamente dalla dashboard. Sincronizzazione automatica attiva.
                 </p>
               </div>
             ) : statusInfo.status === 'expired' ? (

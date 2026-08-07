@@ -181,8 +181,10 @@ export default function CodeQuestView() {
     }, 250);
   };
 
+  const [sandboxResult, setSandboxResult] = useState(null);
+
   // ── Submit Verification ────────────────────────────────────
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (submitted || animPhase !== 'idle') return;
 
     let correct = false;
@@ -190,6 +192,13 @@ export default function CodeQuestView() {
     if (puzzle.mode === 'sort') {
       const currentOrder = userState.blocks.map((b) => b.id).join(',');
       correct = currentOrder === puzzle.solution.join(',');
+
+      // Run code in sandbox if available
+      if (window.electronAPI?.runSandbox) {
+        const fullCode = userState.blocks.map((b) => b.code).join('\n');
+        const sandboxRes = await window.electronAPI.runSandbox(fullCode, 1500);
+        setSandboxResult(sandboxRes);
+      }
     } else if (puzzle.mode === 'fill') {
       correct = userState.selectedToken === puzzle.correctToken;
     } else if (puzzle.mode === 'bug') {

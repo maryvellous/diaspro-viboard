@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Git Scanner
   scanRepos: (rootPaths) => ipcRenderer.invoke('git:scan', rootPaths),
   getGitDetails: (folderPath) => ipcRenderer.invoke('git:details', folderPath),
-  executeGitAction: (folderPath, action) => ipcRenderer.invoke('git:action', { folderPath, action }),
+  executeGitAction: (folderPath, action, options) => ipcRenderer.invoke('git:action', { folderPath, action, options }),
 
   // System Editors / Launchers
   openTerminal: (folderPath) => ipcRenderer.invoke('system:open-terminal', folderPath),
@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openAntigravityIDE: (folderPath) => ipcRenderer.invoke('system:open-antigravity', folderPath),
   openInExplorer: (folderPath) => ipcRenderer.invoke('system:open-explorer', folderPath),
   openExternal: (url) => ipcRenderer.invoke('system:open-external', url),
+  runSandbox: (code, timeoutMs) => ipcRenderer.invoke('system:run-sandbox', { code, timeoutMs }),
 
   // Storage
   getStoreData: () => ipcRenderer.invoke('store:get-all'),
@@ -39,11 +40,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   disconnectGoogle: () => ipcRenderer.invoke('google:disconnect'),
   getGoogleCalendarEvents: (maxResults) => ipcRenderer.invoke('google:get-events', maxResults),
   createGoogleCalendarEvent: (eventData) => ipcRenderer.invoke('google:create-event', eventData),
+  deleteGoogleCalendarEvent: (eventId) => ipcRenderer.invoke('google:delete-event', eventId),
   getGoogleTasks: () => ipcRenderer.invoke('google:get-tasks'),
   toggleGoogleTask: (taskId, completed) => ipcRenderer.invoke('google:toggle-task', { taskId, completed }),
   createGoogleTask: (title, due) => ipcRenderer.invoke('google:create-task', { title, due }),
+  postponeGoogleTask: (taskId) => ipcRenderer.invoke('google:postpone-task', taskId),
   getGoogleDriveFiles: (pageSize) => ipcRenderer.invoke('google:get-drive-files', pageSize),
-
 
   // Spotify Integration
   startSpotifyOAuth: () => ipcRenderer.invoke('spotify:start-oauth'),
@@ -54,13 +56,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   spotifyPause: () => ipcRenderer.invoke('spotify:pause'),
   spotifyNext: () => ipcRenderer.invoke('spotify:next'),
   spotifyPrevious: () => ipcRenderer.invoke('spotify:previous'),
+  spotifySeek: (positionMs) => ipcRenderer.invoke('spotify:seek', positionMs),
 
   // Pinterest Integration
   startPinterestOAuth: () => ipcRenderer.invoke('pinterest:start-oauth'),
   getPinterestStatus: () => ipcRenderer.invoke('pinterest:get-status'),
   disconnectPinterest: () => ipcRenderer.invoke('pinterest:disconnect'),
   getPinterestBoards: () => ipcRenderer.invoke('pinterest:get-boards'),
-  getPinterestPins: (boardId) => ipcRenderer.invoke('pinterest:get-pins', boardId),
+  getPinterestPins: (boardId, bookmark) => ipcRenderer.invoke('pinterest:get-pins', { boardId, bookmark }),
 
 
   // Chat & Context Integration

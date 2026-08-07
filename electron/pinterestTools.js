@@ -287,16 +287,20 @@ class PinterestTools {
     }
   }
 
-  async getPinterestPins(boardId) {
+  async getPinterestPins(boardId, bookmark = '') {
     const token = await this.getAccessToken();
     if (!token) return { success: false, error: 'Account Pinterest non connesso' };
 
     try {
-      const url = boardId
-        ? `https://api.pinterest.com/v5/boards/${boardId}/pins?page_size=50`
-        : `https://api.pinterest.com/v5/pins?page_size=50`;
+      let baseUrl = boardId
+        ? `https://api.pinterest.com/v5/boards/${boardId}/pins?page_size=25`
+        : `https://api.pinterest.com/v5/pins?page_size=25`;
 
-      const res = await fetch(url, {
+      if (bookmark) {
+        baseUrl += `&bookmark=${encodeURIComponent(bookmark)}`;
+      }
+
+      const res = await fetch(baseUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -309,7 +313,7 @@ class PinterestTools {
           imageUrl: p.media?.images?.['600x']?.url || p.media?.images?.originals?.url || p.media?.images?.['400x300']?.url || '',
           boardId: p.board_id || boardId || '',
         }));
-        return { success: true, pins };
+        return { success: true, pins, bookmark: data.bookmark || null };
       }
       return { success: false, error: data.message || 'Impossibile recuperare i Pin' };
     } catch (err) {

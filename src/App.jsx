@@ -76,9 +76,19 @@ function AppInner() {
     }
   }, [enabledSections, currentTab]);
 
-  // Tab keyboard navigation through activeTabs only
+  // Keyboard navigation & global shortcuts (Cmd/Ctrl + K, Esc, Tab)
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+      }
+
       const activeEl = document.activeElement;
       const tag = activeEl?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || activeEl?.isContentEditable) {

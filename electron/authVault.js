@@ -29,10 +29,11 @@ class AuthVault {
     }
   }
 
-  // Fallback AES encryption key derived from OS machine ID / app path if safeStorage unavailable
+  // Hardened AES encryption key derived via PBKDF2 (100,000 iterations) if safeStorage unavailable
   getFallbackKey() {
-    const secret = process.env.COMPUTERNAME || process.env.HOSTNAME || 'diaspro-fallback-key';
-    return crypto.createHash('sha256').update(secret).digest();
+    const secret = process.env.COMPUTERNAME || process.env.HOSTNAME || 'diaspro-fallback-secret';
+    const salt = Buffer.from('diaspro-viboard-machine-salt-v2', 'utf8');
+    return crypto.pbkdf2Sync(secret, salt, 100000, 32, 'sha256');
   }
 
   encryptValue(plainText) {

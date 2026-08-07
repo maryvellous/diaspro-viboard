@@ -132,8 +132,8 @@ ipcMain.handle('git:details', async (event, folderPath) => {
   return await getGitProjectDetails(folderPath);
 });
 
-ipcMain.handle('git:action', async (event, { folderPath, action }) => {
-  return await executeGitAction(folderPath, action);
+ipcMain.handle('git:action', async (event, { folderPath, action, options }) => {
+  return await executeGitAction(folderPath, action, options);
 });
 
 ipcMain.handle('system:open-terminal', async (event, folderPath) => {
@@ -154,6 +154,12 @@ ipcMain.handle('system:open-antigravity', async (event, folderPath) => {
 
 ipcMain.handle('system:open-explorer', async (event, folderPath) => {
   return await openInExplorer(folderPath);
+});
+
+const CodeSandbox = require('./codeSandbox');
+
+ipcMain.handle('system:run-sandbox', async (event, { code, timeoutMs }) => {
+  return CodeSandbox.runJavaScript(code, timeoutMs);
 });
 
 ipcMain.handle('system:open-external', async (event, url) => {
@@ -242,6 +248,14 @@ ipcMain.handle('google:get-drive-files', async (event, pageSize) => {
 });
 
 
+ipcMain.handle('google:delete-event', async (event, eventId) => {
+  return await googleTools.deleteCalendarEvent(eventId);
+});
+
+ipcMain.handle('google:postpone-task', async (event, taskId) => {
+  return await googleTools.postponeTaskToTomorrow(taskId);
+});
+
 // Spotify Integration IPC Handlers
 ipcMain.handle('spotify:start-oauth', async () => {
   return await spotifyTools.startSpotifyOAuth();
@@ -275,6 +289,10 @@ ipcMain.handle('spotify:previous', async () => {
   return await spotifyTools.previous();
 });
 
+ipcMain.handle('spotify:seek', async (event, positionMs) => {
+  return await spotifyTools.seek(positionMs);
+});
+
 // Pinterest Integration IPC Handlers
 ipcMain.handle('pinterest:start-oauth', async () => {
   return await pinterestTools.startPinterestOAuth();
@@ -292,8 +310,8 @@ ipcMain.handle('pinterest:get-boards', async () => {
   return await pinterestTools.getPinterestBoards();
 });
 
-ipcMain.handle('pinterest:get-pins', async (event, boardId) => {
-  return await pinterestTools.getPinterestPins(boardId);
+ipcMain.handle('pinterest:get-pins', async (event, { boardId, bookmark }) => {
+  return await pinterestTools.getPinterestPins(boardId, bookmark);
 });
 
 

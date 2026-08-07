@@ -1,3 +1,5 @@
+const TokenTrimmer = require('./tokenTrimmer');
+
 class AIEngine {
   constructor(authVault, store, githubTools, googleTools, spotifyTools) {
     this.authVault = authVault;
@@ -155,17 +157,20 @@ class AIEngine {
       };
     }
 
+    // Trim messages to fit context window safely
+    const trimmedMessages = TokenTrimmer.trimMessages(messages, 6000);
+
     try {
       if (provider === 'gemini') {
-        return await this.callGemini({ apiKey, modelTier: modelTier || 'gemini-3.6-flash', contextHeader, messages });
+        return await this.callGemini({ apiKey, modelTier: modelTier || 'gemini-3.6-flash', contextHeader, messages: trimmedMessages });
       } else if (provider === 'anthropic') {
-        return await this.callAnthropic({ apiKey, modelTier: modelTier || 'claude-sonnet-5', contextHeader, messages });
+        return await this.callAnthropic({ apiKey, modelTier: modelTier || 'claude-sonnet-5', contextHeader, messages: trimmedMessages });
       } else if (provider === 'openai' || provider === 'deepseek') {
         const baseUrl = provider === 'openai' ? 'https://api.openai.com/v1' : 'https://api.deepseek.com';
         const defaultTier = provider === 'openai' ? 'gpt-5.6-terra' : 'deepseek-v4-flash';
-        return await this.callOpenAICompatible({ baseUrl, apiKey, modelTier: modelTier || defaultTier, contextHeader, messages });
+        return await this.callOpenAICompatible({ baseUrl, apiKey, modelTier: modelTier || defaultTier, contextHeader, messages: trimmedMessages });
       } else if (provider === 'ollama') {
-        return await this.callOllama({ modelTier: modelTier || 'llama3.3', contextHeader, messages });
+        return await this.callOllama({ modelTier: modelTier || 'llama3.3', contextHeader, messages: trimmedMessages });
       } else {
         return { success: false, error: `Provider non supportato: ${provider}` };
       }

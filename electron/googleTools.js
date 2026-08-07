@@ -290,7 +290,59 @@ class GoogleTools {
       return { success: false, error: e.message };
     }
   }
-}
 
+  async deleteCalendarEvent(eventId) {
+    const accessToken = await this.getValidAccessToken();
+    if (!accessToken) return { success: false, error: 'Account Google non connesso' };
+
+    try {
+      const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`;
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (res.status === 204 || res.status === 200) {
+        return { success: true };
+      }
+      return { success: false, error: 'Impossibile eliminare l\'evento' };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  async postponeTaskToTomorrow(taskId) {
+    const accessToken = await this.getValidAccessToken();
+    if (!accessToken) return { success: false, error: 'Account Google non connesso' };
+
+    try {
+      const listsRes = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!listsRes.ok) return { success: false, error: 'Errore recupero lista Tasks' };
+      const listsData = await listsRes.json();
+      const primaryList = listsData.items?.[0];
+      if (!primaryList) return { success: false, error: 'Nessuna lista trovata' };
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const res = await fetch(`https://www.googleapis.com/tasks/v1/lists/${primaryList.id}/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ due: tomorrow.toISOString() }),
+      });
+
+      if (!res.ok) return { success: false, error: 'Impossibile posticipare il task' };
+      const updatedItem = await res.json();
+      return { success: true, task: updatedItem };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+}
 
 module.exports = GoogleTools;

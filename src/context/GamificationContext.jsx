@@ -129,6 +129,14 @@ export function GamificationProvider({ children }) {
     setLevelUpModalData(null);
   };
 
+  const incrementStreak = () => {
+    const newStreak = streak + 1;
+    setStreak(newStreak);
+    const bonusXp = Math.floor(20 * (newStreak > 3 ? 1.5 : 1.0));
+    addXp(bonusXp, `Streak di ${newStreak} giorni di fila! 🔥`);
+    saveUserProgress(xp, level, newStreak, unlockedBadges);
+  };
+
   const addXp = (amount, reason = '') => {
     soundFX.playTaskPop();
     const newXp = xp + amount;
@@ -177,6 +185,7 @@ export function GamificationProvider({ children }) {
         xp,
         level,
         streak,
+        incrementStreak,
         unlockedBadges,
         levelProgress,
         xpInCurrentLevel,

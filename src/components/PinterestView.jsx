@@ -14,10 +14,14 @@ export default function PinterestView({ onNavigateTab }) {
   const [connecting, setConnecting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [bookmark, setBookmark] = useState(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   const checkStatusAndFetchData = async () => {
     if (!window.electronAPI) return;
     setLoading(true);
     setErrorMessage('');
+    setBookmark(null);
 
     try {
       const st = await window.electronAPI.getPinterestStatus();
@@ -30,10 +34,12 @@ export default function PinterestView({ onNavigateTab }) {
         }
 
         const pinsRes = await window.electronAPI.getPinterestPins(
-          selectedBoardId === 'all' ? '' : selectedBoardId
+          selectedBoardId === 'all' ? '' : selectedBoardId,
+          ''
         );
         if (pinsRes.success) {
           setPins(pinsRes.pins || []);
+          setBookmark(pinsRes.bookmark || null);
         } else {
           setErrorMessage(pinsRes.error || 'Impossibile caricare i Pin');
         }
@@ -42,6 +48,25 @@ export default function PinterestView({ onNavigateTab }) {
       setErrorMessage(err.message || 'Errore di connessione a Pinterest');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (!bookmark || loadingMore || !window.electronAPI) return;
+    setLoadingMore(true);
+    try {
+      const pinsRes = await window.electronAPI.getPinterestPins(
+        selectedBoardId === 'all' ? '' : selectedBoardId,
+        bookmark
+      );
+      if (pinsRes.success) {
+        setPins(prev => [...prev, ...(pinsRes.pins || [])]);
+        setBookmark(pinsRes.bookmark || null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -180,50 +205,65 @@ export default function PinterestView({ onNavigateTab }) {
 
       {/* MASONRY GRID OF PINS */}
       {isConnected && pins.length > 0 && (
-        <div className="columns-1 sm:columns-2 md:columns-3 xl:columns-4 gap-4 space-y-4 pb-12">
-          {pins.map((pin) => (
-            <div
-              key={pin.id}
-              className="break-inside-avoid group relative rounded-3xl overflow-hidden bg-[#2b1c47] border border-[#BC957D]/30 shadow-xl hover:border-[#E8D19E] transition-all duration-300 transform hover:-translate-y-1"
-            >
-              {/* Image */}
-              {pin.imageUrl ? (
-                <img
-                  src={pin.imageUrl}
-                  alt={pin.title}
-                  loading="lazy"
-                  className="w-full object-cover rounded-3xl group-hover:scale-105 transition-transform duration-500"
-                />
-              ) : (
-                <div className="w-full h-48 bg-[#1e1333] flex items-center justify-center text-white/30 text-xs font-mono">
-                  Senza immagine
-                </div>
-              )}
+        <div className="flex flex-col gap-8 pb-12">
+          <div className="columns-1 sm:columns-2 md:columns-3 xl:columns-4 gap-4 space-y-4">
+            {pins.map((pin, idx) => (
+              <div
+                key={`${pin.id}-${idx}`}
+                className="break-inside-avoid group relative rounded-3xl overflow-hidden bg-[#2b1c47] border border-[#BC957D]/30 shadow-xl hover:border-[#E8D19E] transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {/* Image */}
+                {pin.imageUrl ? (
+                  <img
+                    src={pin.imageUrl}
+                    alt={pin.title}
+                    loading="lazy"
+                    className="w-full object-cover rounded-3xl group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-[#1e1333] flex items-center justify-center text-white/30 text-xs font-mono">
+                    Senza immagine
+                  </div>
+                )}
 
-              {/* Glassmorphism Hover Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1e1333]/95 via-[#1e1333]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-5 flex flex-col justify-end gap-2">
-                <h3 className="font-heading font-black text-sm text-[#E8D19E] line-clamp-2 leading-tight">
-                  {pin.title}
-                </h3>
-                {pin.description && (
-                  <p className="text-[11px] text-[#A5C4DC] line-clamp-2 font-sans">
-                    {pin.description}
-                  </p>
-                )}
-                {pin.link && (
-                  <a
-                    href={pin.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="action-pill bg-[#BC957D] text-[#1e1333] hover:bg-[#E8D19E] font-bold text-[11px] py-1.5 px-3 self-start mt-1 shadow-md flex items-center gap-1.5"
-                  >
-                    <span>Apri su Pinterest</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
+                {/* Glassmorphism Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1e1333]/95 via-[#1e1333]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-5 flex flex-col justify-end gap-2">
+                  <h3 className="font-heading font-black text-sm text-[#E8D19E] line-clamp-2 leading-tight">
+                    {pin.title}
+                  </h3>
+                  {pin.description && (
+                    <p className="text-[11px] text-[#A5C4DC] line-clamp-2 font-sans">
+                      {pin.description}
+                    </p>
+                  )}
+                  {pin.link && (
+                    <a
+                      href={pin.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="action-pill bg-[#BC957D] text-[#1e1333] hover:bg-[#E8D19E] font-bold text-[11px] py-1.5 px-3 self-start mt-1 shadow-md flex items-center gap-1.5"
+                    >
+                      <span>Apri su Pinterest</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Load More Button */}
+          {bookmark && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="action-pill bg-[#2b1c47] border border-[#E8D19E]/40 text-[#E8D19E] hover:bg-[#E8D19E] hover:text-[#1e1333] font-bold px-6 py-2.5 shadow-lg disabled:opacity-50 transition-all"
+              >
+                {loadingMore ? 'Caricamento altri Pin...' : 'Carica altri Pin'}
+              </button>
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
