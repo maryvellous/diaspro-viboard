@@ -69,6 +69,10 @@ html, body {
   padding: 32px !important;
   box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5) !important;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-wrap: break-word !important;
 }
 
 .dashboard-card:hover {
@@ -78,6 +82,9 @@ html, body {
 
 .card-title-block {
   margin-bottom: 24px !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
 }
 
 .card-path-subtitle {
@@ -85,6 +92,8 @@ html, body {
   font-size: 12px !important;
   font-family: var(--font-code) !important;
   line-height: 1.4 !important;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
 }
 
 .card-badges-block {
@@ -99,6 +108,9 @@ html, body {
   margin-bottom: 24px !important;
   padding: 16px !important;
   border-radius: 18px !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
 }
 
 .card-bottom-actions {
@@ -106,7 +118,18 @@ html, body {
   padding-top: 24px !important;
   display: flex !important;
   align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
   justify-content: space-between !important;
+}
+
+@media (max-width: 768px) {
+  .projects-canvas-container {
+    padding: 20px !important;
+  }
+  .dashboard-card {
+    padding: 20px !important;
+  }
 }
 
 /* Badge & Pill Formulas */

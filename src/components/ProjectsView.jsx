@@ -323,23 +323,24 @@ export default function ProjectsView({ onNavigateTab }) {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between gap-3 group/title">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-3 group/title min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
                         <h2
                           onClick={() => setActiveProject(project)}
-                          className={`font-heading font-black text-2xl leading-snug cursor-pointer transition-opacity hover:opacity-80 ${
+                          className={`font-heading font-black text-2xl leading-snug cursor-pointer transition-opacity hover:opacity-80 break-words line-clamp-2 ${
                             isDarkTheme ? 'text-white' : 'text-[#1e1333]'
                           }`}
+                          title={customName}
                         >
                           {customName}
                         </h2>
                         {isPinned && (
-                          <span className="p-1 rounded-lg bg-[#E8D19E] text-[#1e1333] shadow-md" title="Fissato in alto">
+                          <span className="p-1 rounded-lg bg-[#E8D19E] text-[#1e1333] shadow-md shrink-0" title="Fissato in alto">
                             <Pin className="w-3.5 h-3.5 fill-current" />
                           </span>
                         )}
                         {isHidden && (
-                          <span className="p-1 rounded-lg bg-amber-500/30 text-amber-200 border border-amber-400/40 text-[10px] font-mono font-bold">
+                          <span className="p-1 rounded-lg bg-amber-500/30 text-amber-200 border border-amber-400/40 text-[10px] font-mono font-bold shrink-0">
                             Nascosto
                           </span>
                         )}
@@ -347,7 +348,7 @@ export default function ProjectsView({ onNavigateTab }) {
                       <button
                         onClick={() => handleStartRename(project)}
                         title="Modifica nome personalizzato"
-                        className={`opacity-0 group-hover/title:opacity-100 p-2 rounded-xl transition-all ${
+                        className={`opacity-0 group-hover/title:opacity-100 p-2 rounded-xl transition-all shrink-0 ${
                           isDarkTheme ? 'hover:bg-white/10 text-white/80' : 'hover:bg-black/10 text-black/80'
                         }`}
                       >
@@ -357,9 +358,12 @@ export default function ProjectsView({ onNavigateTab }) {
                   )}
 
                   {/* Subtitle Path with Explicit Class */}
-                  <p className={`card-path-subtitle ${
-                    isDarkTheme ? 'text-white/70' : 'text-black/70'
-                  }`}>
+                  <p
+                    className={`card-path-subtitle break-all ${
+                      isDarkTheme ? 'text-white/70' : 'text-black/70'
+                    }`}
+                    title={project.path}
+                  >
                     {project.path}
                   </p>
 

@@ -46,7 +46,7 @@ export default function ChatPanel() {
   
   // Settings & Tiers
   const [activeProvider, setActiveProvider] = useState('gemini');
-  const [activeTier, setActiveTier] = useState('gemini-3.6-flash');
+  const [activeTier, setActiveTier] = useState('gemini-2.0-flash');
   
   // Active Project Context & Header
   const [activeContextProjectId, setActiveContextProjectId] = useState('none');

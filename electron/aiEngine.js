@@ -20,8 +20,12 @@ class AIEngine {
   }
 
   getContextHeader() {
-    return this.store.get('context_header') || 
-      "Sei Diaspro AI, un assistente IA produttivo integrato nell'app desktop Diaspro Viboard. Sii conciso, cortese e usa Markdown per le risposte.";
+    const customHeader = this.store.get('context_header');
+    const scanPaths = this.store.get('scanPaths') || [];
+    const scanInfo = scanPaths.length > 0 
+      ? ` [Percorsi di scansione disco locali attivi: ${scanPaths.join(', ')}. Usa lo strumento get_local_projects per accedere ai progetti locali trovati sul disco.]`
+      : '';
+    return (customHeader || "Sei Diaspro AI, un assistente IA produttivo integrato nell'app desktop Diaspro Viboard. Sii conciso, cortese e usa Markdown per le risposte.") + scanInfo;
   }
 
   saveContextHeader(headerText) {
@@ -104,6 +108,22 @@ class AIEngine {
         parameters: { type: 'object', properties: {} }
       },
       {
+        name: 'get_local_projects',
+        description: 'Scansiona e restituisce i repository e progetti locali dell\'utente trovati nei percorsi di scansione su disco (es. C:\\Users\\Clark\\Desktop).',
+        parameters: { type: 'object', properties: {} }
+      },
+      {
+        name: 'read_local_file',
+        description: 'Legge il contenuto di un file sorgente o documento di un progetto locale (es. README.md, package.json, file di codice).',
+        parameters: {
+          type: 'object',
+          properties: {
+            filePath: { type: 'string', description: 'Percorso assoluto del file da leggere' }
+          },
+          required: ['filePath']
+        }
+      },
+      {
         name: 'spotify_previous',
         description: 'Torna al brano precedente su Spotify (richiede approvazione utente).',
         parameters: { type: 'object', properties: {} }
@@ -137,6 +157,29 @@ class AIEngine {
           return await this.spotifyTools.next();
         case 'spotify_previous':
           return await this.spotifyTools.previous();
+        case 'get_local_projects': {
+          const rootPaths = this.store.get('scanPaths') || [];
+          const { scanDirectoryForGitRepos } = require('./gitScanner');
+          const allRepos = [];
+          for (const rootPath of rootPaths) {
+            try {
+              const repos = await scanDirectoryForGitRepos(rootPath, 3);
+              allRepos.push(...repos);
+            } catch (err) {
+              console.error('Scan error on path:', rootPath, err);
+            }
+          }
+          return { success: true, scanPaths: rootPaths, projects: allRepos };
+        }
+        case 'read_local_file': {
+          const fs = require('fs').promises;
+          try {
+            const content = await fs.readFile(params.filePath, 'utf-8');
+            return { success: true, filePath: params.filePath, content: content.slice(0, 12000) };
+          } catch (err) {
+            return { success: false, error: err.message };
+          }
+        }
         default:
           return { success: false, error: `Tool non riconosciuto: ${toolName}` };
       }
@@ -348,6 +391,8 @@ class AIEngine {
       input_schema: t.parameters
     }));
 
+    const targetModel = modelTier || 'claude-sonnet-5';
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -356,7 +401,7 @@ class AIEngine {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        model: modelTier,
+        model: targetModel,
         system: contextHeader,
         max_tokens: 1024,
         messages: formattedMessages,
@@ -397,6 +442,52 @@ class AIEngine {
         };
       } else {
         const toolResult = await this.executeTool(toolName, params);
+        try {
+          const followUpMessages = [
+            ...formattedMessages,
+            { role: 'assistant', content: data.content },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'tool_result',
+                  tool_use_id: toolUse.id,
+                  content: JSON.stringify(toolResult)
+                }
+              ]
+            }
+          ];
+
+          const res2 = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: targetModel,
+              system: contextHeader,
+              max_tokens: 1024,
+              messages: followUpMessages,
+              tools
+            })
+          });
+
+          if (res2.ok) {
+            const data2 = await res2.json();
+            let text2 = '';
+            if (data2.content && Array.isArray(data2.content)) {
+              for (const block of data2.content) {
+                if (block.type === 'text') text2 += block.text;
+              }
+            }
+            if (text2) return { success: true, text: text2 };
+          }
+        } catch (err) {
+          // Fallback to raw tool output if follow-up call fails
+        }
+
         return {
           success: true,
           text: `[Dati recuperati tramite ${toolName}]:\n\`\`\`json\n${JSON.stringify(toolResult, null, 2)}\n\`\`\``

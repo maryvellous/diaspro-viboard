@@ -65,7 +65,7 @@ export default function ProjectDetailModal() {
                 {activeProject.branch}
               </span>
             </h2>
-            <p className="text-xs font-mono text-[#A5C4DC] mt-1">{activeProject.path}</p>
+            <p className="text-xs font-mono text-[#A5C4DC] mt-1 break-all">{activeProject.path}</p>
             {formattedModDate && (
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#A5C4DC]/80 mt-1.5">
                 <Clock className="w-3.5 h-3.5 shrink-0 opacity-80" />
